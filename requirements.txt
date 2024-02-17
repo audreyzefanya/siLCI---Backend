@@ -5,5 +5,7 @@ whitenoise
 requests
 urllib3
 psycopg2==2.9.9
+psycopg2-binary
+dj-database-url
 sqlparse
 tzdata
