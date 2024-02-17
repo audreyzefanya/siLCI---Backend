@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-0o+q%(_1=xj_+8&euq%mwa!prt0sf2x9a4__v)&h6_o_-x@2hn
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["propensi-a08-be-production.up.railway.app"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -75,10 +75,16 @@ WSGI_APPLICATION = 'propensiA08_be.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres.yonxezreycifwcmehvwr',
+        'PASSWORD':'dbPropensiA08',
+        'HOST':'aws-0-ap-southeast-1.pooler.supabase.com',
+        'PORT': '5432',
+        "OPTIONS": {"options": "-c search_path=DATABASE_PROPENSI_A08"},
     }
 }
+
 
 
 # Password validation
