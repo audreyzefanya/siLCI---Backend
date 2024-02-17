@@ -1,5 +1,9 @@
 asgiref
-Django
+django
+gunicorn
+whitenoise
+requests
+urllib3
 psycopg2==2.9.9
 sqlparse
 tzdata
