@@ -15,6 +15,7 @@ class Barang(models.Model):
 class PerusahaanImpor(models.Model):
     nama = models.CharField(max_length = 50)
     deskripsi = models.TextField()
+    logo = models.ImageField(upload_to='logo perusahaan/', null=True, blank=True)
     listBarang = models.ManyToManyField(Barang, blank=True)
 
 
