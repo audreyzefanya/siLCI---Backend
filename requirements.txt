@@ -12,3 +12,4 @@ tzdata
 djangorestframework
 markdown
 django-filter
+pillow
