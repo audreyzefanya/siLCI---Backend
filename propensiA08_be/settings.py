@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'silci',
 ]
 
 MIDDLEWARE = [
@@ -81,7 +82,6 @@ DATABASES = {
         'PASSWORD':'dbPropensiA08',
         'HOST':'aws-0-ap-southeast-1.pooler.supabase.com',
         'PORT': '5432',
-        "OPTIONS": {"options": "-c search_path=DATABASE_PROPENSI_A08"},
     }
 }
 
