@@ -12,5 +12,10 @@ class Barang(models.Model):
     deskripsi = models.TextField()
     harga = models.BigIntegerField()
 
+class PerusahaanImpor(models.Model):
+    nama = models.CharField(max_length = 50)
+    deskripsi = models.TextField()
+    listBarang = models.ManyToManyField(Barang, blank=True)
+
 
 
