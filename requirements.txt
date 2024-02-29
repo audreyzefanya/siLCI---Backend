@@ -13,3 +13,4 @@ djangorestframework
 djangorestframework-simplejwt
 markdown
 django-filter
+django-cors-headers
