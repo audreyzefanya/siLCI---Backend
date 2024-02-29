@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import * 
+
+from .views import *
 
 app_name = 'barang'
 
@@ -9,6 +10,12 @@ urlpatterns = [
     })),
     path('create', BarangViewSet.as_view({
         'post': 'createBarang'
+    })),
+        path('detail/<str:barang_id>', BarangViewSet.as_view({
+        'get': 'detailBarang'
+    })),
+        path('update/<str:barang_id>', BarangViewSet.as_view({
+        'put': 'updateBarang'
     })),
     path('perusahaan/all', PerusahaanViewSet.as_view({
         'get': 'getAllPerusahaan'

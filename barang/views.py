@@ -1,8 +1,9 @@
-from rest_framework import viewsets, status
+from rest_framework import status, viewsets
 from rest_framework.response import Response
 
-from .serializers import *
 from .models import *
+from .serializers import *
+
 
 class BarangViewSet(viewsets.ViewSet):
     def getAllBarang(self, request):
@@ -15,6 +16,24 @@ class BarangViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    def detailBarang(self, request, barang_id):
+        try:
+            barang = Barang.objects.get(pk=barang_id)
+            serializer = BarangSerializer(barang)
+            return Response(serializer.data)
+        except Barang.DoesNotExist:
+            return Response({"error": "Barang tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+        
+    def updateBarang(self, request, barang_id):
+        try:
+            barang = Barang.objects.get(pk=barang_id)
+        except Barang.DoesNotExist:
+            return Response({"error": "Barang tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = BarangSerializer(barang, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 class PerusahaanViewSet(viewsets.ViewSet):
     def getAllPerusahaan(self, request):
