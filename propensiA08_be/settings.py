@@ -40,6 +40,10 @@ INSTALLED_APPS = [
     "authentication",
     "rest_framework",
     'corsheaders',
+    'pabrik',
+    'gudang',
+    'barang',
+    'user',
 ]
 
 MIDDLEWARE = [
