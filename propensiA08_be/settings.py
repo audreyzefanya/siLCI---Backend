@@ -10,11 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -37,9 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "authentication",
-    "rest_framework",
+    'authentication',
+    'rest_framework',
     'corsheaders',
+    'pabrik',
+    'gudang',
+    'barang',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -83,7 +90,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
-        'USER': 'postgres.vewlttywbbcgzcfpynfk',
+        'USER': 'postgres.yonxezreycifwcmehvwr',
         'PASSWORD':'dbPropensiA08',
         'HOST':'aws-0-ap-southeast-1.pooler.supabase.com',
         'PORT': '5432',
@@ -93,6 +100,7 @@ DATABASES = {
 # user=postgres.yonxezreycifwcmehvwr password=[YOUR-PASSWORD] host=aws-0-ap-southeast-1.pooler.supabase.com port=5432 dbname=postgres
 
 # user=postgres.vewlttywbbcgzcfpynfk password=[YOUR-PASSWORD] host=aws-0-ap-southeast-1.pooler.supabase.com port=5432 dbname=postgres
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

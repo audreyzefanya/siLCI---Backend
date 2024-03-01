@@ -32,4 +32,7 @@ urlpatterns = [
     path('api/login/', login, name='login'),
     path('api/register/', register, name='register'),
     path('api/user/<int:user_id>/', detailUserById, name='detail-user-by-id'),
+    path('api/barang/', include("barang.urls")),
+    path('api/pabrik/', include("pabrik.urls")),
+    path('api/gudang/', include("gudang.urls")),
 ]
