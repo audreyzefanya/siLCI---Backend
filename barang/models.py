@@ -7,10 +7,10 @@ class Merk(models.Model):
 
 class Barang(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    merk = models.ForeignKey('Merk', on_delete=models.CASCADE, null=True, related_name='barang')
     nama = models.CharField(max_length = 50, null = False)
     deskripsi = models.TextField()
     harga = models.BigIntegerField()
-    merk = models.ForeignKey('Merk', on_delete=models.CASCADE, null=True, related_name='barang')
 
 class PerusahaanImpor(models.Model):
     nama = models.CharField(max_length = 50)

@@ -32,4 +32,5 @@ urlpatterns = [
     path('api/login/', login, name='login'),
     path('api/barang/', include("barang.urls")),
     path('api/pabrik/', include("pabrik.urls")),
+    path('api/gudang/', include("gudang.urls")),
 ]

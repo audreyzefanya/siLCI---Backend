@@ -10,4 +10,4 @@ class PabrikSerializer(serializers.ModelSerializer):
 class BarangPabrikSerializer(serializers.ModelSerializer):
     class Meta:
         model = BarangPabrik
-        fields = '__all__'
+        fields = ['id_barang', 'id_pabrik', 'stok']
