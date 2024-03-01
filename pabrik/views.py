@@ -58,13 +58,13 @@ class BarangPabrikViewSet(viewsets.ViewSet):
             return Response({"error": f"Barang dengan ID {barang_id} tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
 
         try:
-            barangpabrik = BarangPabrik.objects.get(id_barang=barang_id, id_pabrik=pabrik_id)
+            barangpabrik = BarangPabrik.objects.get(barang=barang_id, pabrik=pabrik_id)
             return Response({"message": "Barang sudah ada pada pabrik tersebut"}, status=status.HTTP_200_OK)
         except BarangPabrik.DoesNotExist:
             pass
 
-        new_barang_pabrik = BarangPabrik.objects.create(id_barang=barang, id_pabrik=pabrik)
-        return Response({"message": f"Barang {barang.nama} telah ditambahkan pada Perusahaan {pabrik.nama}"}, status=status.HTTP_200_OK)
+        new_barang_pabrik = BarangPabrik.objects.create(barang=barang, pabrik=pabrik)
+        return Response({"message": f"Barang {barang.nama} telah ditambahkan pada {pabrik.nama}"}, status=status.HTTP_200_OK)
 
 
     # def getPabrikPerusahaan(self, request, perusahaan_id):
