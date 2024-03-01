@@ -40,3 +40,14 @@ class BarangGudangViewSet(viewsets.ViewSet):
 
         new_barang_gudang = BarangGudang.objects.create(barang=barang, gudang=gudang)
         return Response({"message": f"Barang {barang.nama} telah ditambahkan pada {gudang.nama}"}, status=status.HTTP_200_OK)
+
+    def listBarangPadaGudang(self, request, gudang_id):
+        try:
+            gudang = Gudang.objects.get(pk=gudang_id)
+        except Gudang.DoesNotExist:
+            return Response({"error": "Gudang tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+        barang_gudang = BarangGudang.objects.filter(gudang=gudang)
+        serializer = BarangGudangSerializer(barang_gudang, many=True)
+
+        return Response(serializer.data)
