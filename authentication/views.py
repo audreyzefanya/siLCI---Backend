@@ -12,6 +12,7 @@ from rest_framework.exceptions import ParseError
 from django.http import Http404
 from .serializers import CustomUserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
+from .serializers import CustomUserRegistrationSerializer, UserDetailSerializer
 
     
 
@@ -52,6 +53,33 @@ def login(request):
 
     )
 
+@api_view(['POST'])
+def register(request):
+    serializer = CustomUserRegistrationSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(
+            {"detail": "User registered successfully."},
+            status=status.HTTP_201_CREATED
+        )
+    else:
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+@api_view(['GET', 'PUT'])
+def detailUserById(request, user_id):
+    user = get_object_or_404(CustomUser, pk=user_id)
+    if request.method == 'GET':
+        serializer = UserDetailSerializer(user)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = UserDetailSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
     
