@@ -9,4 +9,4 @@ class GudangSerializer(serializers.ModelSerializer):
 class BarangGudangSerializer(serializers.ModelSerializer):
     class Meta:
         model = BarangGudang
-        fields = ['id_barang', 'id_gudang', 'stok']
+        fields = '__all__'
