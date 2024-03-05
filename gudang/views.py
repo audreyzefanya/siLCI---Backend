@@ -51,3 +51,29 @@ class BarangGudangViewSet(viewsets.ViewSet):
         serializer = BarangGudangSerializer(barang_gudang, many=True)
 
         return Response(serializer.data)
+
+    def detailGudang(self, request, gudang_id):
+        try:
+            gudang = Gudang.objects.get(pk=gudang_id)
+        except Gudang.DoesNotExist:
+            return Response({"error": "Gudang tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+        barang_gudang = BarangGudang.objects.filter(gudang=gudang)
+        data = []
+
+        for bg in barang_gudang:
+            nama_barang = bg.barang.nama
+            data.append({
+                "nama_barang": nama_barang,
+                "stok": bg.stok
+            })
+
+        response_data = {
+            "id_gudang": gudang_id,
+            "nama_gudang": gudang.nama,
+            "alamat_gudang": gudang.alamat,
+            "kapasitas_gudang": gudang.kapasitas,
+            "barang": data
+        }
+
+        return Response(response_data)

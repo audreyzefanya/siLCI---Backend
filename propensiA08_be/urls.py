@@ -16,22 +16,22 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from authentication.views import login, register, detailUserById
-
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-    TokenVerifyView,
-)
+# from authentication.views import login, register, detailUserById
+#
+# from rest_framework_simplejwt.views import (
+#     TokenObtainPairView,
+#     TokenRefreshView,
+#     TokenVerifyView,
+# )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
-    path('api/login/', login, name='login'),
-    path('api/register/', register, name='register'),
-    path('api/user/<int:user_id>/', detailUserById, name='detail-user-by-id'),
+    # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    # path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    # path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    # path('api/login/', login, name='login'),
+    # path('api/register/', register, name='register'),
+    # path('api/user/<int:user_id>/', detailUserById, name='detail-user-by-id'),
     path('api/barang/', include("barang.urls")),
     path('api/pabrik/', include("pabrik.urls")),
     path('api/gudang/', include("gudang.urls")),
