@@ -14,4 +14,7 @@ urlpatterns = [
     path('<str:gudang_id>', BarangGudangViewSet.as_view({
         'post': 'addBarangToGudang'
     })),
+    path('barang-gudang/<uuid:gudang_id>/', BarangGudangViewSet.as_view({
+        'get': 'listBarangPadaGudang',
+    }), name='barang-gudang-list'),
 ]
