@@ -40,6 +40,14 @@ class PerusahaanViewSet(viewsets.ViewSet):
         perusahaan = PerusahaanImpor.objects.all()
         serializer = PerusahaanSerializer(perusahaan, many=True)
         return Response(serializer.data)
+    
+    def getPerusahaan(self, request, perusahaan_id):
+        try:
+            perusahaan = PerusahaanImpor.objects.get(pk=perusahaan_id)
+        except PerusahaanImpor.DoesNotExist:
+            return Response({"error": "Perusahaan tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = PerusahaanSerializer(perusahaan)
+        return Response(serializer.data)
 
     def createPerusahaan(self, request):
         serializer = PerusahaanSerializer(data=request.data)

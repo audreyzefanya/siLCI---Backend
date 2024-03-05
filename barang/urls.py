@@ -27,4 +27,7 @@ urlpatterns = [
         'get': 'getBarangPerusahaan',
         'put': 'addBarangToPerusahaan'
     })),
+        path('perusahaan/detail/<str:perusahaan_id>', PerusahaanViewSet.as_view({
+        'get': 'getPerusahaan',
+    })),
 ]
