@@ -10,11 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -26,6 +29,7 @@ SECRET_KEY = 'django-insecure-0o+q%(_1=xj_+8&euq%mwa!prt0sf2x9a4__v)&h6_o_-x@2hn
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+# ALLOWED_HOSTS = ["propensi-a08-be-production.up.railway.app", "localhost"]
 
 
 # Application definition
@@ -37,6 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'authentication',
+    'rest_framework',
+    'corsheaders',
     'pabrik',
     'gudang',
     'barang',
@@ -44,6 +51,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,6 +62,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'propensiA08_be.urls'
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 TEMPLATES = [
     {
@@ -85,10 +95,12 @@ DATABASES = {
         'PASSWORD':'dbPropensiA08',
         'HOST':'aws-0-ap-southeast-1.pooler.supabase.com',
         'PORT': '5432',
-        "OPTIONS": {"options": "-c search_path=DATABASE_PROPENSI_A08"},
     }
 }
 
+# user=postgres.yonxezreycifwcmehvwr password=[YOUR-PASSWORD] host=aws-0-ap-southeast-1.pooler.supabase.com port=5432 dbname=postgres
+
+# user=postgres.vewlttywbbcgzcfpynfk password=[YOUR-PASSWORD] host=aws-0-ap-southeast-1.pooler.supabase.com port=5432 dbname=postgres
 
 
 # Password validation
@@ -131,3 +143,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+AUTH_USER_MODEL = 'authentication.CustomUser'
+
+
