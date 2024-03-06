@@ -38,7 +38,7 @@ class BarangViewSet(viewsets.ViewSet):
 class PerusahaanViewSet(viewsets.ViewSet):
     def getAllPerusahaan(self, request):
         perusahaan = PerusahaanImpor.objects.all()
-        serializer = PerusahaanSerializer(perusahaan, many=True)
+        serializer = PerusahaanSerializer(perusahaan, many=True, context={'request': request})
         return Response(serializer.data)
     
     def getPerusahaan(self, request, perusahaan_id):
