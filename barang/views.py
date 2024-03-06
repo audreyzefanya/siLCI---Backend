@@ -66,7 +66,7 @@ class PerusahaanViewSet(viewsets.ViewSet):
             return Response({"error": "Tidak menemukan id pada request"}, status=status.HTTP_400_BAD_REQUEST)
 
         if perusahaan.listBarang.filter(id=barang_id).exists(): # Cek apakah barang sudah ada pada perusahaan tersebut
-            return Response({"message": f"Barang tersebut telah didaftarkan pada perusahaan tersebut"}, status=status.HTTP_200_OK)
+            return Response({"message": f"Barang tersebut telah didaftarkan pada perusahaan tersebut"}, status=status.HTTP_400_BAD_REQUEST)
         
         try: 
             barang = Barang.objects.get(pk=barang_id)
