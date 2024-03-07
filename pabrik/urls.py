@@ -14,7 +14,11 @@ urlpatterns = [
     path('create', PabrikViewSet.as_view({
         'post': 'createPabrik'
     })),
-    path('<str:pabrik_id>', BarangPabrikViewSet.as_view({
+    path('<str:pabrik_name>', PabrikViewSet.as_view({
+        'get': 'getPabrik',
+    })),
+    path('barang/<str:pabrik_name>', BarangPabrikViewSet.as_view({
+        'get': 'getBarangInPabrik',
         'post': 'addBarangToPabrik'
     })),
     #     path('detail/<str:pabrik_id>', PabrikViewSet.as_view({

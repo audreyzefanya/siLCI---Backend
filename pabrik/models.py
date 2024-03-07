@@ -4,7 +4,7 @@ import uuid
 
 class Pabrik(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    nama = models.CharField(max_length=50)
+    nama = models.CharField(max_length=50, unique=True)
     alamat = models.CharField(max_length=200)
 
 class BarangPabrik(models.Model):
