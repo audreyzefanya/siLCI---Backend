@@ -1,7 +1,5 @@
 from rest_framework import serializers
-
 from .models import *
-
 
 class MerkSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,10 +25,11 @@ class BarangSerializer(serializers.ModelSerializer):
 
 class PerusahaanSerializer(serializers.ModelSerializer):
     logo_url = serializers.SerializerMethodField()
+    listBarang = BarangSerializer(many=True)
 
     class Meta:
         model = PerusahaanImpor
-        fields = ['id', 'nama', 'deskripsi', 'logo', 'logo_url']
+        fields = ['id', 'nama', 'deskripsi', 'listBarang', 'logo', 'logo_url']
 
     def get_logo_url(self, perusahaan):
         if perusahaan.logo:
