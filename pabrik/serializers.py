@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
+from barang.serializers import BarangSerializer
 from .models import *
 
 class PabrikSerializer(serializers.ModelSerializer):
@@ -8,6 +9,8 @@ class PabrikSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class BarangPabrikSerializer(serializers.ModelSerializer):
+    barang = BarangSerializer()
+
     class Meta:
         model = BarangPabrik
-        fields = '__all__'
+        fields = ['barang', 'stok']
