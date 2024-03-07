@@ -38,7 +38,7 @@ class BarangViewSet(viewsets.ViewSet):
 class PerusahaanViewSet(viewsets.ViewSet):
     def getAllPerusahaan(self, request):
         perusahaan = PerusahaanImpor.objects.all()
-        serializer = PerusahaanSerializer(perusahaan, many=True)
+        serializer = PerusahaanSerializer(perusahaan, many=True, context={'request': request})
         return Response(serializer.data)
     
     def getPerusahaan(self, request, perusahaan_id):
@@ -46,7 +46,7 @@ class PerusahaanViewSet(viewsets.ViewSet):
             perusahaan = PerusahaanImpor.objects.get(pk=perusahaan_id)
         except PerusahaanImpor.DoesNotExist:
             return Response({"error": "Perusahaan tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
-        serializer = PerusahaanSerializer(perusahaan)
+        serializer = PerusahaanSerializer(perusahaan, context={'request': request})
         return Response(serializer.data)
 
     def createPerusahaan(self, request):
@@ -66,7 +66,7 @@ class PerusahaanViewSet(viewsets.ViewSet):
             return Response({"error": "Tidak menemukan id pada request"}, status=status.HTTP_400_BAD_REQUEST)
 
         if perusahaan.listBarang.filter(id=barang_id).exists(): # Cek apakah barang sudah ada pada perusahaan tersebut
-            return Response({"message": f"Barang tersebut telah didaftarkan pada perusahaan tersebut"}, status=status.HTTP_200_OK)
+            return Response({"message": f"Barang tersebut telah didaftarkan pada perusahaan tersebut"}, status=status.HTTP_400_BAD_REQUEST)
         
         try: 
             barang = Barang.objects.get(pk=barang_id)
