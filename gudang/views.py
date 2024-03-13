@@ -34,7 +34,7 @@ class BarangGudangViewSet(viewsets.ViewSet):
 
         try:
             baranggudang = BarangGudang.objects.get(barang=barang_id, gudang=gudang_id)
-            return Response({"message": "Barang sudah ada pada gudang tersebut"}, status=status.HTTP_200_OK)
+            return Response({"message": "Barang sudah ada pada gudang tersebut"}, status=status.HTTP_400_BAD_REQUEST)
         except BarangGudang.DoesNotExist:
             pass
 
