@@ -77,3 +77,13 @@ class BarangGudangViewSet(viewsets.ViewSet):
         }
 
         return Response(response_data)
+
+    def updateDetailGudang(self, request, gudang_id):
+        try:
+            gudang = Gudang.objects.get(pk=gudang_id)
+        except Gudang.DoesNotExist:
+            return Response({"error": "Gudang tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = GudangSerializer(gudang, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
