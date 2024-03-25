@@ -24,14 +24,6 @@ class BarangSerializer(serializers.ModelSerializer):
 
 
 class PerusahaanSerializer(serializers.ModelSerializer):
-    logo_url = serializers.SerializerMethodField()
-    listBarang = BarangSerializer(many=True)
-
     class Meta:
         model = PerusahaanImpor
-        fields = ['id', 'nama', 'deskripsi', 'listBarang', 'logo', 'logo_url']
-
-    def get_logo_url(self, perusahaan):
-        if perusahaan.logo:
-            return self.context['request'].build_absolute_uri(perusahaan.logo.url)
-        return None
+        fields = ['id', 'nama', 'deskripsi', 'logo', 'admin']
