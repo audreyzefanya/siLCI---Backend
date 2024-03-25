@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from authentication.views import login, register, detailUserById
+from authentication.views import login, register, detailUserById, getAdminImport
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -34,6 +34,7 @@ urlpatterns = [
     path('api/login/', login, name='login'),
     path('api/register/', register, name='register'),
     path('api/user/<int:user_id>/', detailUserById, name='detail-user-by-id'),
+    path('api/user/admin-import/', getAdminImport, name='get-admin-import'),
     path('api/barang/', include("barang.urls")),
     path('api/pabrik/', include("pabrik.urls")),
     path('api/gudang/', include("gudang.urls")),
