@@ -32,8 +32,8 @@ class PengadaanSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
 
     def get_status(self, obj):
-        return dict(PengadaanBarangImpor.StatusPengadaan.choices)[obj.status]
-
+        return dict(PengadaanBarangImpor.STATUS_PENGADAAN).get(obj.status)
+    
     class Meta:
         model = PengadaanBarangImpor
         fields = '__all__'
