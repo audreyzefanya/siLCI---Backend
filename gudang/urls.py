@@ -16,8 +16,12 @@ urlpatterns = [
     })),
     path('barang-gudang/<uuid:gudang_id>/', BarangGudangViewSet.as_view({
         'get': 'listBarangPadaGudang',
-    }), name='barang-gudang-list'),
+    })),
     path('barang-gudang/detail/<uuid:gudang_id>/', BarangGudangViewSet.as_view({
         'get': 'detailGudang'
-    }), name='detail-gudang'),
+    })),
+    path('barang-gudang/update/<uuid:gudang_id>/', BarangGudangViewSet.as_view({
+        'put': 'updateDetailGudang'
+    })),
+
 ]
