@@ -30,7 +30,7 @@ urlpatterns = [
     path('perusahaan/detail/<str:perusahaan_id>', PerusahaanViewSet.as_view({
         'get': 'getPerusahaan',
     })),
-    path('perusahaan/<str:perusahaan_id>/<str:id_barang>/request', PengadaanViewSet.as_view({
-        'post': 'addPengadaaanImpor',
+    path('perusahaan/barang/request', PengadaanViewSet.as_view({
+        'post': 'addPengadaaanImpor'
     })),
 ]
