@@ -97,3 +97,11 @@ class PengadaanViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    def increaseStatusPengadaan(self, request, pengadaan_id):
+        try:
+            pengadaan = PengadaanBarangImpor.objects.get(pk=pengadaan_id)
+        except PengadaanBarangImpor.DoesNotExist:
+            return Response({"error": "Pengadaan Impor tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+        pengadaan.status = pengadaan.status + 1
+        return Response({"message": f"Status pengadaan dengan id {pengadaan.id} berhasil diubah menjadi {pengadaan.status}"}, status=status.HTTP_200_OK)
