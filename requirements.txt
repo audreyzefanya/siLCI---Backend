@@ -15,4 +15,5 @@ markdown
 django-filter
 pillow
 django-cors-headers
+python-dotenv
 cloudinary
