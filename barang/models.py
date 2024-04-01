@@ -33,5 +33,16 @@ class PengadaanBarangImpor(models.Model):
     fileInvoice = models.TextField(null=True, blank=True)
     filePayment = models.TextField(null=True, blank=True)
 
+    class StatusPengadaan(models.IntegerChoices):
+        REJECTED = 0, 'Permintaan Ditolak'
+        SENT = 1, 'Penawaran Dikirim'
+        WAITINGPAYMENT = 2, 'Menunggu Pembayaran'
+        PAID = 3, 'Pembayaran Dikirim'
+        VERIFIED = 4, 'Pembayaran Diverifikasi'
+        PRODUCTONWAY = 5, 'Barang Dalam Perjalanan'
+        RECEIVED = 6, 'Barang Diterima'
+
+    status = models.IntegerField(choices=StatusPengadaan, default = 1)
+
 
 
