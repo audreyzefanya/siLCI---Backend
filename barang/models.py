@@ -15,9 +15,9 @@ class Barang(models.Model):
     harga = models.BigIntegerField()
 
 class PerusahaanImpor(models.Model):
-    nama = models.CharField(max_length = 50)
+    nama = models.CharField(max_length = 50, unique=True)
     deskripsi = models.TextField()
-    logo = models.ImageField(upload_to='logoperusahaan/', null=True, blank=True)
+    logo = models.TextField(null=True, blank=True)
     listBarang = models.ManyToManyField(Barang, blank=True)
     admin = models.OneToOneField(CustomUser, on_delete=models.PROTECT, related_name='perusahaan', null=True, blank=True)
 
