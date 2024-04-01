@@ -90,3 +90,10 @@ class PerusahaanViewSet(viewsets.ViewSet):
         barangs = perusahaan.listBarang.all()
         serializer = BarangSerializer(barangs, many=True)
         return Response(serializer.data)
+
+class PengadaanViewSet(viewsets.ViewSet):
+    def addPengadaaanImpor(self, request, perusahaan_id, id_barang):
+        serializer = PengadaanSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
