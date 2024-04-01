@@ -27,3 +27,13 @@ class PerusahaanSerializer(serializers.ModelSerializer):
     class Meta:
         model = PerusahaanImpor
         fields = ['id', 'nama', 'deskripsi', 'logo', 'admin']
+
+class PengadaanSerializer(serializers.ModelSerializer):
+    status = serializers.SerializerMethodField()
+
+    def get_status(self, obj):
+        return dict(PengadaanBarangImpor.StatusPengadaan.choices)[obj.status]
+
+    class Meta:
+        model = PengadaanBarangImpor
+        fields = '__all__'

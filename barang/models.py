@@ -21,4 +21,28 @@ class PerusahaanImpor(models.Model):
     listBarang = models.ManyToManyField(Barang, blank=True)
     admin = models.OneToOneField(CustomUser, on_delete=models.PROTECT, related_name='perusahaan', null=True, blank=True)
 
+class PengadaanBarangImpor(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    perusahaan = models.ForeignKey(PerusahaanImpor, on_delete=models.CASCADE, default=uuid.uuid4)
+    barang = models.ForeignKey('barang.Barang', on_delete=models.CASCADE, default=uuid.uuid4)
+    jumlahBarang = models.IntegerField()
+    gudangTujuan = models.ForeignKey('gudang.Gudang', on_delete=models.CASCADE, default=uuid.uuid4)
+    totalHarga = models.BigIntegerField()
+    tanggalPermintaaan = models.DateTimeField(auto_now_add=True)
+    tanggalUpdate = models.DateTimeField(auto_now=True)
+    fileInvoice = models.TextField(null=True, blank=True)
+    filePayment = models.TextField(null=True, blank=True)
+
+    class StatusPengadaan(models.IntegerChoices):
+        REJECTED = 0, 'Permintaan Ditolak'
+        SENT = 1, 'Penawaran Dikirim'
+        WAITINGPAYMENT = 2, 'Menunggu Pembayaran'
+        PAID = 3, 'Pembayaran Dikirim'
+        VERIFIED = 4, 'Pembayaran Diverifikasi'
+        PRODUCTONWAY = 5, 'Barang Dalam Perjalanan'
+        RECEIVED = 6, 'Barang Diterima'
+
+    status = models.IntegerField(choices=StatusPengadaan, default = 1)
+
+
 
