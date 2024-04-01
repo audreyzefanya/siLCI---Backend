@@ -1,6 +1,12 @@
 stages:
   - deploy
 
+variables:
+  CLOUDINARY_URL: $CLOUDINARY_URL
+  
+before_script:
+  - export CLOUDINARY_URL=${CLOUDINARY_URL}
+
 deploy-railway:
   stage: deploy
   image: ubuntu

@@ -3,7 +3,7 @@ from rest_framework.response import Response
 
 from .models import *
 from .serializers import *
-
+import cloudinary.uploader
 
 class BarangViewSet(viewsets.ViewSet):
     def getAllBarang(self, request):
@@ -50,6 +50,12 @@ class PerusahaanViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     def createPerusahaan(self, request):
+        print(request.data)
+        logo = cloudinary.uploader.upload(request.data["logo"],
+                                folder = "perusahaanlogo/",
+                                public_id=request.data["nama"])
+    
+        request.data["logo"] = logo["url"]
         serializer = PerusahaanSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()

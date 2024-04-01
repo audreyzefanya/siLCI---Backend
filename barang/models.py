@@ -2,6 +2,7 @@ from django.db import models
 
 import uuid
 from authentication.models import CustomUser
+from cloudinary.models import CloudinaryField
 
 class Merk(models.Model):
     id = models.AutoField(primary_key=True)
@@ -17,7 +18,7 @@ class Barang(models.Model):
 class PerusahaanImpor(models.Model):
     nama = models.CharField(max_length = 50)
     deskripsi = models.TextField()
-    logo = models.ImageField(upload_to='logoperusahaan/', null=True, blank=True)
+    logo = models.TextField(null=True, blank=True)
     listBarang = models.ManyToManyField(Barang, blank=True)
     admin = models.OneToOneField(CustomUser, on_delete=models.PROTECT, related_name='perusahaan', null=True, blank=True)
 
