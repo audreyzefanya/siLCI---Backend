@@ -92,7 +92,7 @@ class PerusahaanViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
 class PengadaanViewSet(viewsets.ViewSet):
-    def addPengadaaanImpor(self, request, perusahaan_id, id_barang):
+    def addPengadaaanImpor(self, request):
         serializer = PengadaanSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
