@@ -50,7 +50,6 @@ class PerusahaanViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     def createPerusahaan(self, request):
-        print(request.data)
         logo = cloudinary.uploader.upload(request.data["logo"],
                                 folder = "perusahaanlogo/",
                                 public_id=request.data["nama"])
