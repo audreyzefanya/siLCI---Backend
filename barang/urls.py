@@ -11,10 +11,10 @@ urlpatterns = [
     path('create', BarangViewSet.as_view({
         'post': 'createBarang'
     })),
-        path('detail/<str:barang_id>', BarangViewSet.as_view({
+    path('detail/<str:barang_id>', BarangViewSet.as_view({
         'get': 'detailBarang'
     })),
-        path('update/<str:barang_id>', BarangViewSet.as_view({
+    path('update/<str:barang_id>', BarangViewSet.as_view({
         'put': 'updateBarang'
     })),
     path('perusahaan/all', PerusahaanViewSet.as_view({
@@ -27,7 +27,10 @@ urlpatterns = [
         'get': 'getBarangPerusahaan',
         'put': 'addBarangToPerusahaan'
     })),
-        path('perusahaan/detail/<str:perusahaan_id>', PerusahaanViewSet.as_view({
+    path('perusahaan/detail/<str:perusahaan_id>', PerusahaanViewSet.as_view({
         'get': 'getPerusahaan',
+    })),
+    path('perusahaan/<str:perusahaan_id>/<str:id_barang>/request', PengadaanViewSet.as_view({
+        'post': 'addPengadaaanImpor',
     })),
 ]

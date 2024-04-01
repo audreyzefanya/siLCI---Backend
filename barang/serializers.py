@@ -27,3 +27,8 @@ class PerusahaanSerializer(serializers.ModelSerializer):
     class Meta:
         model = PerusahaanImpor
         fields = ['id', 'nama', 'deskripsi', 'logo', 'admin']
+
+class PengadaanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PengadaanBarangImpor
+        fields = '__all__'
