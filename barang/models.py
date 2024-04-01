@@ -2,7 +2,6 @@ from django.db import models
 
 import uuid
 from authentication.models import CustomUser
-from cloudinary.models import CloudinaryField
 
 class Merk(models.Model):
     id = models.AutoField(primary_key=True)

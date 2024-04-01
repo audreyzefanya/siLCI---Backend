@@ -1,12 +1,6 @@
 stages:
   - deploy
 
-variables:
-  CLOUDINARY_URL: $CLOUDINARY_URL
-  
-before_script:
-  - export CLOUDINARY_URL=${CLOUDINARY_URL}
-
 deploy-railway:
   stage: deploy
   image: ubuntu
@@ -17,3 +11,5 @@ deploy-railway:
     - apt-get update && apt-get install -y curl
     - curl -fsSL https://railway.app/install.sh | sh
     - railway up --service=$RAILWAY_SERVICE_NAME -d
+  environment:
+    CLOUDINARY_URL: $CLOUDINARY_URL
