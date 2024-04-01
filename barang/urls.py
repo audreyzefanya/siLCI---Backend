@@ -33,4 +33,7 @@ urlpatterns = [
     path('perusahaan/barang/request', PengadaanViewSet.as_view({
         'post': 'addPengadaaanImpor'
     })),
+    path('perusahaan/request/<str:pengadaan_id>/status', PengadaanViewSet.as_view({
+        'put': 'increaseStatusPengadaan'
+    })),
 ]
