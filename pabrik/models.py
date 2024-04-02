@@ -1,5 +1,6 @@
 from django.db import models
 from barang.models import Barang
+from gudang.models import Gudang
 import uuid
 
 class Pabrik(models.Model):
@@ -18,12 +19,6 @@ class BarangPabrik(models.Model):
                 fields=['barang', 'pabrik'], name='unique_barang_pabrik'
             )
         ]
-
-class Gudang(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    alamat = models.CharField(max_length=255)
-    kapasitas = models.IntegerField()
-    jenis = models.CharField(max_length=50)
 
 class PermintaanPengiriman(models.Model):
     kode_permintaan = models.CharField(max_length=10, primary_key=True)
