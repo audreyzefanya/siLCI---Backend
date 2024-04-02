@@ -14,3 +14,8 @@ class BarangPabrikSerializer(serializers.ModelSerializer):
     class Meta:
         model = BarangPabrik
         fields = ['barang', 'stok']
+
+class PermintaanPengirimanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PermintaanPengiriman
+        fields = '__all__'
