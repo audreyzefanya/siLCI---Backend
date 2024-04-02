@@ -95,3 +95,13 @@ class BarangPabrikViewSet(viewsets.ViewSet):
         serializers = BarangPabrikSerializer(daftarBarang, many=True)
         return Response(serializers.data)
 
+class PermintaanPengirimanViewSet(viewsets.ViewSet):
+    def getDaftarPengiriman(self, request, pabrik_name):
+        try:
+            pabrik = Pabrik.objects.get(nama=pabrik_name)
+        except Pabrik.DoesNotExist:
+            return Response({"error": "Pabrik tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+        permintaan_pengiriman = PermintaanPengiriman.objects.filter(pabrik=pabrik)
+        serializer = PermintaanPengirimanSerializer(permintaan_pengiriman, many=True)
+        return Response(serializer.data)
