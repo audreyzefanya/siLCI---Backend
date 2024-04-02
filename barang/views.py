@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 
@@ -104,4 +105,10 @@ class PengadaanViewSet(viewsets.ViewSet):
         except PengadaanBarangImpor.DoesNotExist:
             return Response({"error": "Pengadaan Impor tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
         pengadaan.status = pengadaan.status + 1
+
+        try:
+            pengadaan.save()  
+        except IntegrityError:
+            return Response({"error": "Gagal menyimpan perubahan status"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
         return Response({"message": f"Status pengadaan dengan id {pengadaan.id} berhasil diubah menjadi {pengadaan.status}"}, status=status.HTTP_200_OK)
