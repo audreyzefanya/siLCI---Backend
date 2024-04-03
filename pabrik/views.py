@@ -94,3 +94,15 @@ class PermintaanPengirimanViewSet(viewsets.ViewSet):
         permintaan_pengiriman = PermintaanPengiriman.objects.filter(pabrik=pabrik)
         serializer = PermintaanPengirimanSerializer(permintaan_pengiriman, many=True)
         return Response(serializer.data)
+
+    def statusPengiriman(self, request, kode_permintaan):
+        try:
+            permintaan = PermintaanPengiriman.objects.get(kode_permintaan=kode_permintaan)
+        except PermintaanPengiriman.DoesNotExist:
+            return Response({"error": "Permintaan pengiriman tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = PermintaanPengirimanStatusSerializer(permintaan, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
