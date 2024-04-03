@@ -3,7 +3,7 @@ from rest_framework.response import Response
 
 from .models import *
 from .serializers import *
-
+import cloudinary.uploader
 
 class BarangViewSet(viewsets.ViewSet):
     def getAllBarang(self, request):
@@ -37,7 +37,7 @@ class BarangViewSet(viewsets.ViewSet):
 
 class PerusahaanViewSet(viewsets.ViewSet):
     def getAllPerusahaan(self, request):
-        perusahaan = PerusahaanImpor.objects.all()
+        perusahaan = PerusahaanImpor.objects.all().order_by('id')
         serializer = PerusahaanSerializer(perusahaan, many=True, context={'request': request})
         return Response(serializer.data)
     
@@ -50,6 +50,11 @@ class PerusahaanViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     def createPerusahaan(self, request):
+        logo = cloudinary.uploader.upload(request.data["logo"],
+                                folder = "perusahaanlogo/",
+                                public_id=request.data["nama"])
+    
+        request.data["logo"] = logo["url"]
         serializer = PerusahaanSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -85,3 +90,18 @@ class PerusahaanViewSet(viewsets.ViewSet):
         barangs = perusahaan.listBarang.all()
         serializer = BarangSerializer(barangs, many=True)
         return Response(serializer.data)
+
+class PengadaanViewSet(viewsets.ViewSet):
+    def addPengadaaanImpor(self, request):
+        serializer = PengadaanSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    def increaseStatusPengadaan(self, request, pengadaan_id):
+        try:
+            pengadaan = PengadaanBarangImpor.objects.get(pk=pengadaan_id)
+        except PengadaanBarangImpor.DoesNotExist:
+            return Response({"error": "Pengadaan Impor tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+        pengadaan.status = pengadaan.status + 1
+        return Response({"message": f"Status pengadaan dengan id {pengadaan.id} berhasil diubah menjadi {pengadaan.status}"}, status=status.HTTP_200_OK)
