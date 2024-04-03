@@ -110,7 +110,7 @@ class PermintaanPengirimanViewSet(viewsets.ViewSet):
         try:
             permintaan = PermintaanPengiriman.objects.get(kode_permintaan=kode_permintaan)
         except PermintaanPengiriman.DoesNotExist:
-            return Response({"error": "Permintaan pengiriman tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "Kode pengiriman tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = PermintaanPengirimanStatusSerializer(permintaan, data=request.data, partial=True)
         if serializer.is_valid():
