@@ -1,5 +1,6 @@
 from django.db import models
 from barang.models import Barang
+from gudang.models import Gudang
 import uuid
 
 class Pabrik(models.Model):
@@ -18,3 +19,13 @@ class BarangPabrik(models.Model):
                 fields=['barang', 'pabrik'], name='unique_barang_pabrik'
             )
         ]
+
+class PermintaanPengiriman(models.Model):
+    kode_permintaan = models.CharField(max_length=10, primary_key=True)
+    pabrik = models.ForeignKey(Pabrik, on_delete=models.CASCADE)
+    gudang = models.ForeignKey(Gudang, on_delete=models.CASCADE)
+    barang = models.ForeignKey(Barang, on_delete=models.CASCADE)
+    jumlah = models.IntegerField()
+    status = models.IntegerField()
+    waktu_permintaan = models.DateTimeField(auto_now_add=True)
+    tanggal_pengiriman = models.DateField(null=True, blank=True)
