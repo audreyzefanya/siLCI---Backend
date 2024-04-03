@@ -1,6 +1,8 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from barang.models import Barang
+from pabrik.models import PermintaanPengiriman
+from .serializers import PermintaanPengirimanSerializer
 from .models import *
 from .serializers import *
 
@@ -86,4 +88,16 @@ class BarangGudangViewSet(viewsets.ViewSet):
         serializer = GudangSerializer(gudang, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        return Response(serializer.data)
+
+class PermintaanPengirimanViewSet(viewsets.ViewSet):
+    def getDaftarPengiriman(self, request, gudang_id):
+        try:
+            gudang = Gudang.objects.get(pk=gudang_id)
+        except Gudang.DoesNotExist:
+            return Response({"error": "Gudang tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Mengambil daftar permintaan pengiriman yang terkait dengan gudang tersebut
+        permintaan_pengiriman = PermintaanPengiriman.objects.filter(gudang=gudang)
+        serializer = PermintaanPengirimanSerializer(permintaan_pengiriman, many=True)
         return Response(serializer.data)
