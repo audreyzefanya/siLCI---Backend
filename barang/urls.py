@@ -36,4 +36,19 @@ urlpatterns = [
     path('perusahaan/request/<str:pengadaan_id>/status', PengadaanViewSet.as_view({
         'put': 'increaseStatusPengadaan'
     })),
+    path('perusahaan/request/detail/<str:pengadaan_id>/', PengadaanViewSet.as_view({
+    'get': 'detailPengadaan'
+    })),
+
+    path('perusahaan/request/all/', PengadaanViewSet.as_view({
+    'get': 'getAllPengadaan'
+    }), name='all-pengadaan'),
+
+    path('pengadaan/request/upload-invoice/<str:pengadaan_id>', PengadaanViewSet.as_view({
+    'post': 'uploadInvoiceFile'
+    }), name='upload-invoice-file'),
+
+    path('pengadaan/request/upload-payment<str:pengadaan_id>/', PengadaanViewSet.as_view({
+    'post': 'uploadPaymentFile'
+    }), name='upload-payment-file'),
 ]
