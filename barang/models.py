@@ -1,5 +1,7 @@
 from django.db import models
+
 import uuid
+from authentication.models import CustomUser
 
 class Merk(models.Model):
     id = models.AutoField(primary_key=True)
@@ -13,10 +15,35 @@ class Barang(models.Model):
     harga = models.BigIntegerField()
 
 class PerusahaanImpor(models.Model):
-    nama = models.CharField(max_length = 50)
+    nama = models.CharField(max_length = 50, unique=True)
     deskripsi = models.TextField()
-    logo = models.ImageField(upload_to='logo perusahaan/', null=True, blank=True)
+    logo = models.TextField(null=True, blank=True)
     listBarang = models.ManyToManyField(Barang, blank=True)
+    admin = models.OneToOneField(CustomUser, on_delete=models.PROTECT, related_name='perusahaan', null=True, blank=True)
+
+class PengadaanBarangImpor(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    perusahaan = models.ForeignKey(PerusahaanImpor, on_delete=models.CASCADE, default=uuid.uuid4)
+    barang = models.ForeignKey('barang.Barang', on_delete=models.CASCADE, default=uuid.uuid4)
+    jumlahBarang = models.IntegerField()
+    gudangTujuan = models.ForeignKey('gudang.Gudang', on_delete=models.CASCADE, default=uuid.uuid4)
+    totalHarga = models.BigIntegerField()
+    tanggalPermintaaan = models.DateTimeField(auto_now_add=True)
+    tanggalUpdate = models.DateTimeField(auto_now=True)
+    fileInvoice = models.TextField(null=True, blank=True)
+    filePayment = models.TextField(null=True, blank=True)
+
+    STATUS_PENGADAAN = (
+        (0, 'Permintaan Ditolak'),
+        (1, 'Penawaran Dikirim'),
+        (2, 'Menunggu Pembayaran'),
+        (3, 'Pembayaran Dikirim'),
+        (4, 'Pembayaran Diverifikasi'),
+        (5, 'Barang Dalam Perjalanan'),
+        (6, 'Barang Diterima')
+    )
+
+    status = models.IntegerField(choices=STATUS_PENGADAAN, default = 1)
 
 
 

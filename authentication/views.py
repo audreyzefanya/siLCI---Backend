@@ -81,7 +81,11 @@ def detailUserById(request, user_id):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+@api_view(['GET'])
+def getAdminImport(request):
+    adminImports = CustomUser.objects.filter(role="Admin Perusahaan Import")
+    serializer = CustomUserSerializer(adminImports, many=True)
+    return Response(serializer.data)
     
 
 
