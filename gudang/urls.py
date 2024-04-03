@@ -24,6 +24,10 @@ urlpatterns = [
         'put': 'updateDetailGudang'
     })),
     path('permintaanpengiriman/<str:gudang_id>', PermintaanPengirimanViewSet.as_view({
-        'get': 'getDaftarPengiriman',
+        'get': 'getDaftarPengirimanGudang',
     })),
+    path('statuspengiriman/<str:kode_permintaan>', PermintaanPengirimanViewSet.as_view({
+        'put': 'statusPengirimanGudang',
+    })),
+
 ]
