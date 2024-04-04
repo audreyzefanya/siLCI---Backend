@@ -18,8 +18,12 @@ urlpatterns = [
         'get': 'getPabrik',
     })),
     path('batch/<str:pabrik_name>', BatchProduksiViewSet.as_view({
-        'get': 'getBatchProduksiInPabrik',
-        # 'post': 'addBarangToPabrik'
+        'get': 'getAllBatchProduksiInPabrik',
+        'post': 'addBatchProduksiToPabrik'
+    })),
+    path('batch/<str:pabrik_name>/<str:batch_code>', BatchProduksiViewSet.as_view({
+        'get': 'getAllBatchProduksiInPabrik',
+        'post': 'addBatchProduksiToPabrik'
     })),
     path('barang/<str:pabrik_name>', BarangPabrikViewSet.as_view({
         'get': 'getBarangInPabrik',
