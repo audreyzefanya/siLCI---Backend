@@ -117,3 +117,15 @@ class PermintaanPengirimanViewSet(viewsets.ViewSet):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class BatchProduksiViewSet(viewsets.ViewSet):
+
+    def getBatchProduksiInPabrik(self, request, pabrik_name):
+        try:
+            pabrik = Pabrik.objects.get(nama=pabrik_name)
+        except Pabrik.DoesNotExist:
+            return Response({"error": "Pabrik tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+        daftarBatch = BatchProduksi.objects.filter(pabrik=pabrik.id)
+        serializers = BatchProduksiSerializer(daftarBatch, many=True)
+        return Response(serializers.data)
