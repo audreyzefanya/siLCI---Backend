@@ -113,6 +113,20 @@ class PengadaanViewSet(viewsets.ViewSet):
         
         return Response({"message": f"Status pengadaan dengan id {pengadaan.id} berhasil diubah menjadi {pengadaan.status}"}, status=status.HTTP_200_OK)
     
+    def rejectPengadaan(self, request, pengadaan_id):
+        try:
+            pengadaan = PengadaanBarangImpor.objects.get(pk=pengadaan_id)
+        except PengadaanBarangImpor.DoesNotExist:
+            return Response({"error": "Pengadaan Impor tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+        pengadaan.status = 0
+
+        try:
+            pengadaan.save()  
+        except IntegrityError:
+            return Response({"error": "Gagal menyimpan perubahan status"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        return Response({"message": f"Status pengadaan dengan id {pengadaan.id} berhasil diubah menjadi {pengadaan.status}"}, status=status.HTTP_200_OK)
+    
     def detailPengadaan(self, request, pengadaan_id=None):
         try:
             pengadaan = PengadaanBarangImpor.objects.get(pk=pengadaan_id)

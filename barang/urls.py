@@ -36,6 +36,9 @@ urlpatterns = [
     path('perusahaan/request/<str:pengadaan_id>/status', PengadaanViewSet.as_view({
         'put': 'increaseStatusPengadaan'
     })),
+    path('perusahaan/request/<str:pengadaan_id>/reject', PengadaanViewSet.as_view({
+        'put': 'rejectPengadaan'
+    })),
     path('perusahaan/request/detail/<str:pengadaan_id>/', PengadaanViewSet.as_view({
         'get': 'detailPengadaan'
     })),
