@@ -166,4 +166,22 @@ class BatchProduksiViewSet(viewsets.ViewSet):
         new_batch_produksi = BatchProduksiSerializer(data=request.data, context={'barang': barang, 'pabrik': pabrik})
         new_batch_produksi.is_valid(raise_exception=True)
         new_batch_produksi.save()
+
         return Response({"message": f"Batch Produksi {kode_produksi} telah ditambahkan pada {pabrik.nama}"}, status=status.HTTP_200_OK)
+
+    def updateBatchProduksiInPabrik(self, request, pabrik_name, batch_code):
+        try:
+            pabrik = Pabrik.objects.get(nama=pabrik_name)
+        except Pabrik.DoesNotExist:
+            return Response({"error": "Pabrik tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            batch_produksi = BatchProduksi.objects.get(kode_produksi=batch_code, pabrik=pabrik)
+        except BatchProduksi.DoesNotExist:
+            return Response({"error": f"Batch Produksi dengan kode {batch_code} tidak ditemukan di pabrik {pabrik.nama}"}, status=status.HTTP_404_NOT_FOUND)
+
+        updated_batch_produksi = BatchProduksiSerializer(instance=batch_produksi, data=request.data, partial=True, context={'pabrik': pabrik})
+        updated_batch_produksi.is_valid(raise_exception=True)
+        updated_batch_produksi.save()
+
+        return Response({"message": f"Batch Produksi {batch_code} telah berhasil diperbarui"}, status=status.HTTP_200_OK)

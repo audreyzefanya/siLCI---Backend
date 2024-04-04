@@ -23,7 +23,7 @@ urlpatterns = [
     })),
     path('batch/<str:pabrik_name>/<str:batch_code>', BatchProduksiViewSet.as_view({
         'get': 'getDetailBatchProduksiInPabrik',
-        # 'post': 'addBatchProduksiToPabrik'
+        'put': 'updateBatchProduksiInPabrik'
     })),
     path('barang/<str:pabrik_name>', BarangPabrikViewSet.as_view({
         'get': 'getBarangInPabrik',
