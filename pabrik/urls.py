@@ -21,6 +21,12 @@ urlpatterns = [
         'get': 'getBarangInPabrik',
         'post': 'addBarangToPabrik'
     })),
+    path('permintaanpengiriman/<str:pabrik_name>', PermintaanPengirimanViewSet.as_view({
+        'get': 'getDaftarPengiriman',
+    })),
+    path('statuspengiriman/<str:kode_permintaan>', PermintaanPengirimanViewSet.as_view({
+        'put': 'statusPengiriman',
+    })),
     #     path('detail/<str:pabrik_id>', PabrikViewSet.as_view({
     #     'get': 'detailPabrik'
     # })),
