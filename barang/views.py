@@ -112,3 +112,54 @@ class PengadaanViewSet(viewsets.ViewSet):
             return Response({"error": "Gagal menyimpan perubahan status"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         return Response({"message": f"Status pengadaan dengan id {pengadaan.id} berhasil diubah menjadi {pengadaan.status}"}, status=status.HTTP_200_OK)
+    
+    def detailPengadaan(self, request, pengadaan_id=None):
+        try:
+            pengadaan = PengadaanBarangImpor.objects.get(pk=pengadaan_id)
+        except PengadaanBarangImpor.DoesNotExist:
+            return Response({"error": "Pengadaan Impor tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = PengadaanSerializer(pengadaan)
+        return Response(serializer.data)
+    
+    def getAllPengadaan(self, request):
+        pengadaan = PengadaanBarangImpor.objects.all()
+        serializer = PengadaanSerializer(pengadaan, many=True)
+        return Response(serializer.data)
+    
+    def uploadInvoiceFile(self, request, pengadaan_id=None):
+        try:
+            pengadaan = PengadaanBarangImpor.objects.get(pk=pengadaan_id)
+        except PengadaanBarangImpor.DoesNotExist:
+            return Response({"error": "Pengadaan Impor tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+        
+        if 'fileInvoice' in request.FILES:
+            file_invoice = request.FILES['fileInvoice']
+            upload_response = cloudinary.uploader.upload(file_invoice,
+                                                        folder="pengadaanInvoice/",
+                                                        public_id=f"invoice_{pengadaan_id}")
+            
+            pengadaan.fileInvoice = upload_response['url']
+            pengadaan.save()
+            return Response({"message": "Invoice file uploaded successfully", "fileUrl": upload_response['url']}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "No invoice file provided"}, status=status.HTTP_400_BAD_REQUEST)
+        
+    def uploadPaymentFile(self, request, pengadaan_id=None):
+        try:
+            pengadaan = PengadaanBarangImpor.objects.get(pk=pengadaan_id)
+        except PengadaanBarangImpor.DoesNotExist:
+            return Response({"error": "Pengadaan Impor tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+        
+        if 'filePayment' in request.FILES:
+            file_payment = request.FILES['filePayment']
+            upload_response = cloudinary.uploader.upload(file_payment,
+                                                        folder="pengadaanPayment/",
+                                                        public_id=f"payment_{pengadaan_id}")
+            
+            pengadaan.filePayment = upload_response['url']
+            pengadaan.save()
+            return Response({"message": "Payment file uploaded successfully", "fileUrl": upload_response['url']}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "No payment file provided"}, status=status.HTTP_400_BAD_REQUEST)
+
