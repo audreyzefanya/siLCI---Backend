@@ -20,6 +20,14 @@ class BarangPabrik(models.Model):
             )
         ]
 
+class BatchProduksi(models.Model):
+    kode_produksi = models.CharField(max_length=10, primary_key=True)
+    barang = models.ForeignKey('barang.Barang', on_delete=models.CASCADE, default=uuid.uuid4, related_name='barang_batch')
+    pabrik = models.ForeignKey('Pabrik', on_delete=models.CASCADE, default=uuid.uuid4, related_name='pabrik_batch')
+    jumlah = models.IntegerField(default=0)
+    tanggal_produksi = models.DateField()
+    status = models.IntegerField(default=1)
+
 class PermintaanPengiriman(models.Model):
     kode_permintaan = models.CharField(max_length=10, primary_key=True)
     pabrik = models.ForeignKey(Pabrik, on_delete=models.CASCADE)
