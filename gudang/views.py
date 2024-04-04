@@ -92,7 +92,7 @@ class BarangGudangViewSet(viewsets.ViewSet):
     
     def addStokGudang(self, request):
         try:
-            baranggudang = BarangGudang.objects.get(barang=request.data["barang"], gudang=request.gudang["gudang"])
+            baranggudang = BarangGudang.objects.get(barang=request.data["barang"], gudang=request.data["gudang"])
         except BarangGudang.DoesNotExist:
             baranggudang = BarangGudang.objects.create(barang=request.data["barang"], gudang=request.data["gudang"])
             pass
