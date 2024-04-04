@@ -17,6 +17,10 @@ urlpatterns = [
     path('<str:pabrik_name>', PabrikViewSet.as_view({
         'get': 'getPabrik',
     })),
+    path('batch/<str:pabrik_name>', BatchProduksiViewSet.as_view({
+        'get': 'getBatchProduksiInPabrik',
+        # 'post': 'addBarangToPabrik'
+    })),
     path('barang/<str:pabrik_name>', BarangPabrikViewSet.as_view({
         'get': 'getBarangInPabrik',
         'post': 'addBarangToPabrik'
