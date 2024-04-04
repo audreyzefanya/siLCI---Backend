@@ -2,6 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from barang.models import Barang
 from pabrik.models import PermintaanPengiriman
+from django.db import connection
 from .serializers import PermintaanPengirimanSerializer
 from .models import *
 from .serializers import *
@@ -92,10 +93,18 @@ class BarangGudangViewSet(viewsets.ViewSet):
     
     def addStokGudang(self, request):
         try:
-            baranggudang = BarangGudang.objects.get(barang=request.data.get('barang'), gudang=request.data.get('gudang'))
-            baranggudang.stok += request.data.get('stok')
-            baranggudang.save()
-            print("barang ada")
+            barang_id = request.data.get('barang')
+            gudang_id = request.data.get('gudang')
+
+            baranggudang = BarangGudang.objects.get(barang=barang_id, gudang=gudang_id)
+            newStok = baranggudang.stok + request.data.get('stok')
+            
+            cursor = connection.cursor()
+    
+            try:
+                cursor.execute("UPDATE gudang_baranggudang SET stok = %s WHERE barang_id = %s AND gudang_id = %s", [newStok, barang_id, gudang_id])
+            except:
+                return Response({"error": f"Error Kontol {baranggudang.stok}"}, status=status.HTTP_404_NOT_FOUND)
         except BarangGudang.DoesNotExist:
             print("barang ga ada")
             try:
