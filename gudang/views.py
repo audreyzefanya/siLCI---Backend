@@ -94,7 +94,17 @@ class BarangGudangViewSet(viewsets.ViewSet):
         try:
             baranggudang = BarangGudang.objects.get(barang=request.data.get('barang'), gudang=request.data.get('gudang'))
         except BarangGudang.DoesNotExist:
-            baranggudang = BarangGudang.objects.create(barang=request.data.get('barang'), gudang=request.data.get('gudang'))
+            try:
+                barang = Barang.objects.get(pk=request.data.get('barang'))
+            except Barang.DoesNotExist:
+                return Response({"error": f"Barang dengan ID tersebut tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+            
+            try:
+                gudang = Gudang.objects.get(pk=request.data.get('gudang'))
+            except Gudang.DoesNotExist:
+                return Response({"error": "Gudang tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+            
+            baranggudang = BarangGudang.objects.create(barang=barang, gudang=gudang)
             pass
 
         baranggudang.stok += request.data.get('stok')
