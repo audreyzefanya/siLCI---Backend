@@ -89,6 +89,17 @@ class BarangGudangViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+    
+    def addStokGudang(self, request):
+        try:
+            baranggudang = BarangGudang.objects.get(barang=request.data["barang"], gudang=request.gudang["gudang"])
+        except BarangGudang.DoesNotExist:
+            baranggudang = BarangGudang.objects.create(barang=request.data["barang"], gudang=request.data["gudang"])
+            pass
+
+        baranggudang.stok += request.data["stok"]
+        baranggudang.save()
+        return Response({"message": f"Stok barang {baranggudang.barang.nama} telah ditambahkan pada {baranggudang.gudang.nama}"}, status=status.HTTP_200_OK)
 
 class PermintaanPengirimanViewSet(viewsets.ViewSet):
     def getDaftarPengirimanGudang(self, request, gudang_id):
