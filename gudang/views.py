@@ -98,7 +98,7 @@ class BarangGudangViewSet(viewsets.ViewSet):
 
             baranggudang = BarangGudang.objects.get(barang=barang_id, gudang=gudang_id)
             newStok = baranggudang.stok + request.data.get('stok')
-            
+
             cursor = connection.cursor()
     
             try:
@@ -106,7 +106,6 @@ class BarangGudangViewSet(viewsets.ViewSet):
             except:
                 return Response({"error": f"Error Kontol {baranggudang.stok}"}, status=status.HTTP_404_NOT_FOUND)
         except BarangGudang.DoesNotExist:
-            print("barang ga ada")
             try:
                 barang = Barang.objects.get(pk=request.data.get('barang'))
             except Barang.DoesNotExist:
