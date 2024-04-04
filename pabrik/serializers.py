@@ -24,10 +24,10 @@ class BatchProduksiSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
-        barang = self.context['barang']  # Mengambil barang dari konteks serializer
-        pabrik = self.context['pabrik']  # Mengambil pabrik dari konteks serializer
-        validated_data['barang'] = barang  # Menambahkan barang ke dalam validated_data
-        validated_data['pabrik'] = pabrik  # Menambahkan pabrik ke dalam validated_data
+        barang = self.context['barang']
+        pabrik = self.context['pabrik']
+        validated_data['barang'] = barang
+        validated_data['pabrik'] = pabrik
         return super().create(validated_data)
 
 class PermintaanPengirimanSerializer(serializers.ModelSerializer):
