@@ -104,7 +104,7 @@ class BarangGudangViewSet(viewsets.ViewSet):
             try:
                 cursor.execute("UPDATE gudang_baranggudang SET stok = %s WHERE barang_id = %s AND gudang_id = %s", [newStok, barang_id, gudang_id])
             except:
-                return Response({"error": f"Error Kontol {baranggudang.stok}"}, status=status.HTTP_404_NOT_FOUND)
+                return Response({"error": f"Error menambahkan stok barang {baranggudang.stok}"}, status=status.HTTP_404_NOT_FOUND)
         except BarangGudang.DoesNotExist:
             try:
                 barang = Barang.objects.get(pk=request.data.get('barang'))
