@@ -134,6 +134,21 @@ class BatchProduksiViewSet(viewsets.ViewSet):
         serializers = BatchProduksiSerializer(daftarBatch, many=True)
         return Response(serializers.data)
 
+    def getDetailBatchProduksiInPabrik(self, request, pabrik_name, batch_code):
+        try:
+            pabrik = Pabrik.objects.get(nama=pabrik_name)
+        except Pabrik.DoesNotExist:
+            return Response({"error": "Pabrik tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            batch_produksi = BatchProduksi.objects.get(pabrik=pabrik, kode_produksi=batch_code)
+        except BatchProduksi.DoesNotExist:
+            return Response({"error": f"Batch Produksi dengan kode {batch_code} tidak ditemukan di pabrik {pabrik.nama}"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = BatchProduksiSerializer(batch_produksi)
+        return Response(serializer.data)
+
+
     def addBatchProduksiToPabrik(self, request, pabrik_name):
         try:
             pabrik = Pabrik.objects.get(nama=pabrik_name)
