@@ -93,7 +93,11 @@ class BarangGudangViewSet(viewsets.ViewSet):
     def addStokGudang(self, request):
         try:
             baranggudang = BarangGudang.objects.get(barang=request.data.get('barang'), gudang=request.data.get('gudang'))
+            baranggudang.stok += request.data.get('stok')
+            baranggudang.save()
+            print("barang ada")
         except BarangGudang.DoesNotExist:
+            print("barang ga ada")
             try:
                 barang = Barang.objects.get(pk=request.data.get('barang'))
             except Barang.DoesNotExist:
@@ -104,11 +108,9 @@ class BarangGudangViewSet(viewsets.ViewSet):
             except Gudang.DoesNotExist:
                 return Response({"error": "Gudang tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
             
-            baranggudang = BarangGudang.objects.create(barang=barang, gudang=gudang)
+            baranggudang = BarangGudang.objects.create(barang=barang, gudang=gudang, stok=request.data.get('stok'))
             pass
 
-        baranggudang.stok += request.data.get('stok')
-        baranggudang.save()
         return Response({"message": f"Stok barang {baranggudang.barang.nama} telah ditambahkan pada {baranggudang.gudang.nama}"}, status=status.HTTP_200_OK)
 
 class PermintaanPengirimanViewSet(viewsets.ViewSet):
