@@ -103,8 +103,19 @@ class PermintaanPengirimanViewSet(viewsets.ViewSet):
             return Response({"error": "Pabrik tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
 
         permintaan_pengiriman = PermintaanPengiriman.objects.filter(pabrik=pabrik)
-        serializer = PermintaanPengirimanSerializer(permintaan_pengiriman, many=True)
-        return Response(serializer.data)
+        data = []
+        for pengiriman in permintaan_pengiriman:
+            data.append({
+                "kode_permintaan": pengiriman.kode_permintaan,
+                "pabrik": pengiriman.pabrik.nama,
+                "gudang": pengiriman.gudang.nama,
+                "barang": pengiriman.barang.nama,
+                "jumlah": pengiriman.jumlah,
+                "status": pengiriman.status,
+                "waktu_permintaan": pengiriman.waktu_permintaan,
+                "tanggal_pengiriman": pengiriman.tanggal_pengiriman
+            })
+        return Response(data)
 
     def statusPengiriman(self, request, kode_permintaan):
         try:
