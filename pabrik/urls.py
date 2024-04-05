@@ -33,7 +33,7 @@ urlpatterns = [
         'get': 'getDaftarPengiriman',
     })),
     path('statuspengiriman/<str:kode_permintaan>', PermintaanPengirimanViewSet.as_view({
-        'put': 'statusPengiriman',
+        'put': 'updateStatus',
     })),
     #     path('detail/<str:pabrik_id>', PabrikViewSet.as_view({
     #     'get': 'detailPabrik'
