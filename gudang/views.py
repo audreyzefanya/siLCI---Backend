@@ -1,11 +1,11 @@
-from rest_framework import viewsets, status
+from rest_framework import serializers, status
 from rest_framework.response import Response
-from barang.models import Barang
+from rest_framework import viewsets
+from .models import Gudang, BarangGudang
+from .serializers import GudangSerializer, BarangGudangSerializer
 from pabrik.models import PermintaanPengiriman
-from django.db import connection
-from .serializers import PermintaanPengirimanSerializer
-from .models import *
-from .serializers import *
+from pabrik.serializers import PermintaanPengirimanSerializer
+from barang.models import Barang
 
 class GudangViewSet(viewsets.ViewSet):
     def listGudang(self, request):
@@ -18,6 +18,7 @@ class GudangViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class BarangGudangViewSet(viewsets.ViewSet):
     def addBarangToGudang(self, request, gudang_id):
@@ -52,7 +53,6 @@ class BarangGudangViewSet(viewsets.ViewSet):
 
         barang_gudang = BarangGudang.objects.filter(gudang=gudang)
         serializer = BarangGudangSerializer(barang_gudang, many=True)
-
         return Response(serializer.data)
 
     def detailGudang(self, request, gudang_id):
@@ -121,6 +121,7 @@ class BarangGudangViewSet(viewsets.ViewSet):
 
         return Response({"message": f"Stok barang {baranggudang.barang.nama} telah ditambahkan pada {baranggudang.gudang.nama}"}, status=status.HTTP_200_OK)
 
+
 class PermintaanPengirimanViewSet(viewsets.ViewSet):
     def getDaftarPengirimanGudang(self, request, gudang_id):
         try:
@@ -128,18 +129,28 @@ class PermintaanPengirimanViewSet(viewsets.ViewSet):
         except Gudang.DoesNotExist:
             return Response({"error": "Gudang tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Mengambil daftar permintaan pengiriman yang terkait dengan gudang tersebut
         permintaan_pengiriman = PermintaanPengiriman.objects.filter(gudang=gudang)
-        serializer = PermintaanPengirimanSerializer(permintaan_pengiriman, many=True)
-        return Response(serializer.data)
+        data = []
+        for pengiriman in permintaan_pengiriman:
+            data.append({
+                "kode_permintaan": pengiriman.kode_permintaan,
+                "pabrik": pengiriman.pabrik.nama,
+                "gudang": pengiriman.gudang.nama,
+                "barang": pengiriman.barang.nama,
+                "jumlah": pengiriman.jumlah,
+                "status": pengiriman.status,
+                "waktu_permintaan": pengiriman.waktu_permintaan,
+                "tanggal_pengiriman": pengiriman.tanggal_pengiriman
+            })
+        return Response(data)
 
-    def statusPengirimanGudang(self, request, kode_permintaan):
+    def updateStatusGudang(self, request, kode_permintaan):
         try:
             permintaan = PermintaanPengiriman.objects.get(kode_permintaan=kode_permintaan)
         except PermintaanPengiriman.DoesNotExist:
             return Response({"error": "Kode pengiriman tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = PermintaanPengirimanStatusSerializer(permintaan, data=request.data, partial=True)
+        serializer = PermintaanPengirimanSerializer(permintaan, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
