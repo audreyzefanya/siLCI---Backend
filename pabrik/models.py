@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from barang.models import Barang
 from gudang.models import Gudang
 import uuid
@@ -19,6 +20,14 @@ class BarangPabrik(models.Model):
                 fields=['barang', 'pabrik'], name='unique_barang_pabrik'
             )
         ]
+
+class BatchProduksi(models.Model):
+    kode_produksi = models.CharField(max_length=10, primary_key=True)
+    barang = models.ForeignKey('barang.Barang', on_delete=models.CASCADE, default=uuid.uuid4, related_name='barang_batch')
+    pabrik = models.ForeignKey('Pabrik', on_delete=models.CASCADE, default=uuid.uuid4, related_name='pabrik_batch')
+    jumlah = models.IntegerField(default=0)
+    tanggal_produksi = models.DateField(default=timezone.now)
+    status = models.IntegerField(default=1)
 
 class PermintaanPengiriman(models.Model):
     kode_permintaan = models.CharField(max_length=10, primary_key=True)
