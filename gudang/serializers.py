@@ -22,9 +22,3 @@ class PermintaanPengirimanSerializer(serializers.ModelSerializer):
     class Meta:
         model = PermintaanPengiriman
         fields = '__all__'
-
-class PermintaanPengirimanStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PermintaanPengiriman
-        fields = ['status']
-        read_only_fields = ['kode_permintaan', 'pabrik', 'gudang', 'barang', 'jumlah', 'waktu_permintaan', 'tanggal_pengiriman']
