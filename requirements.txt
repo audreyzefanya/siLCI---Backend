@@ -10,5 +10,10 @@ dj-database-url
 sqlparse
 tzdata
 djangorestframework
+djangorestframework-simplejwt
 markdown
 django-filter
+pillow
+django-cors-headers
+python-dotenv
+cloudinary
