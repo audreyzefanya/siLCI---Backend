@@ -1,5 +1,8 @@
+from django.db.models import Max
 from rest_framework import status, viewsets
 from rest_framework.response import Response
+
+from gudang.views import BarangGudangViewSet
 
 from .models import *
 from .serializers import *
@@ -191,6 +194,17 @@ class BatchProduksiViewSet(viewsets.ViewSet):
             return Response({"error": "Pabrik tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
 
         kode_produksi = request.data.get('kode_produksi')
+
+        # Membuat kode batch produksi baru
+        last_batchproduksi = BatchProduksi.objects.aggregate(Max('kode_produksi'))
+        last_code = last_batchproduksi['kode_produksi__max']
+        if last_code:
+            next_code = int(last_code[2:]) + 1
+        else:
+            next_code = 1
+        new_kode_produksi = f"BP{next_code:03}"
+        request.data['kode_produksi'] = new_kode_produksi
+
         barang_id = request.data.get('barang_id')
 
         try:
@@ -202,7 +216,7 @@ class BatchProduksiViewSet(viewsets.ViewSet):
         new_batch_produksi.is_valid(raise_exception=True)
         new_batch_produksi.save()
 
-        return Response({"message": f"Batch Produksi {kode_produksi} telah ditambahkan pada {pabrik.nama}"}, status=status.HTTP_200_OK)
+        return Response({"message": f"Batch Produksi {new_kode_produksi} telah ditambahkan pada {pabrik.nama}"}, status=status.HTTP_200_OK)
 
     def updateBatchProduksiInPabrik(self, request, pabrik_name, batch_code):
         try:
@@ -214,6 +228,16 @@ class BatchProduksiViewSet(viewsets.ViewSet):
             batch_produksi = BatchProduksi.objects.get(kode_produksi=batch_code, pabrik=pabrik)
         except BatchProduksi.DoesNotExist:
             return Response({"error": f"Batch Produksi dengan kode {batch_code} tidak ditemukan di pabrik {pabrik.nama}"}, status=status.HTTP_404_NOT_FOUND)
+
+        # if batch_produksi.status != '4' and request.data.get('status') == '4':
+        #     # Memanggil viewset BarangGudangViewSet
+        #     barang_gudang_viewset = BarangGudangViewSet()
+        #
+        #     # Mendapatkan stok barang dari batch produksi yang selesai
+        #     stok_barang = batch_produksi.jumlah  # Misalnya, mengambil jumlah batch produksi sebagai stok
+        #
+        #     # Memanggil metode AddStokGudang dari viewset BarangGudangViewSet
+        #     barang_gudang_viewset.AddStokGudang(request, pabrik_name, stok_barang)
 
         updated_batch_produksi = BatchProduksiSerializer(instance=batch_produksi, data=request.data, partial=True, context={'pabrik': pabrik})
         updated_batch_produksi.is_valid(raise_exception=True)
