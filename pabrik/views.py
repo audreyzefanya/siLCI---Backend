@@ -3,6 +3,7 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 
 from gudang.views import BarangGudangViewSet
+
 from .models import *
 from .serializers import *
 
@@ -118,6 +119,29 @@ class PermintaanPengirimanViewSet(viewsets.ViewSet):
                 "tanggal_pengiriman": pengiriman.tanggal_pengiriman
             })
         return Response(data)
+    
+    def addPermintaanPengiriman(self, request, pabrik_name):
+        try:
+            pabrik = Pabrik.objects.get(nama=pabrik_name)
+        except Pabrik.DoesNotExist:
+            return Response({"error": "Pabrik tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+        
+        last_permintaan = PermintaanPengiriman.objects.aggregate(Max('kode_permintaan'))
+        last_code = last_permintaan['kode_permintaan__max']
+        if last_code:
+            next_code = int(last_code[3:]) + 1 
+        else:
+            next_code = 1
+        new_kode_permintaan = f"REQ{next_code:03}"
+        
+        request.data['kode_permintaan'] = new_kode_permintaan
+        request.data['pabrik'] = pabrik.id  
+
+        serializer = PermintaanPengirimanSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def updateStatus(self, request, kode_permintaan):
         try:

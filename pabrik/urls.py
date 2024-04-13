@@ -31,6 +31,7 @@ urlpatterns = [
     })),
     path('permintaanpengiriman/<str:pabrik_name>', PermintaanPengirimanViewSet.as_view({
         'get': 'getDaftarPengiriman',
+        'post': 'addPermintaanPengiriman'
     })),
     path('statuspengiriman/<str:kode_permintaan>', PermintaanPengirimanViewSet.as_view({
         'put': 'updateStatus',
