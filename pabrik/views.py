@@ -1,4 +1,5 @@
 from django.db.models import Max
+from django.db import connection
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 
@@ -97,6 +98,43 @@ class BarangPabrikViewSet(viewsets.ViewSet):
         daftarBarang = BarangPabrik.objects.filter(pabrik=pabrik.id)
         serializers = BarangPabrikSerializer(daftarBarang, many=True)
         return Response(serializers.data)
+
+    def updateStokBarangInPabrik(self, batch_produksi, pabrik_name, barang_id):
+        try:
+            pabrik = Pabrik.objects.get(nama=pabrik_name)
+        except Pabrik.DoesNotExist:
+            return Response({"error": "Pabrik tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            barang = Barang.objects.get(pk=barang_id)
+        except Barang.DoesNotExist:
+            return Response({"error": f"Barang dengan ID {barang_id} tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            barangpabrik = BarangPabrik.objects.get(barang=barang, pabrik=pabrik)
+            newStok = barangpabrik.stok + batch_produksi.jumlah
+
+            cursor = connection.cursor()
+
+            try:
+                cursor.execute("UPDATE pabrik_barangpabrik SET stok = %s WHERE barang_id = %s AND pabrik_id = %s", [newStok, barang_id, pabrik.id])
+            except:
+                return Response({"error": f"Error mengupdate stok barang {barangpabrik.stok}"}, status=status.HTTP_404_NOT_FOUND)
+        except BarangPabrik.DoesNotExist:
+            try:
+                barang = Barang.objects.get(pk=request.data.get('barang'))
+            except Barang.DoesNotExist:
+                return Response({"error": f"Barang dengan ID tersebut tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+            try:
+                pabrik = Pabrik.objects.get(nama=pabrik_name)
+            except Pabrik.DoesNotExist:
+                return Response({"error": "Pabrik tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+            barangpabrik = BarangPabrik.objects.create(barang=barang, pabrik=pabrik, stok=batch_produksi.jumlah)
+
+        return Response({"message": f"Stok barang {barangpabrik.barang.nama} telah diperbarui pada {barangpabrik.pabrik.nama}"}, status=status.HTTP_200_OK)
+
 
 class PermintaanPengirimanViewSet(viewsets.ViewSet):
     def getDaftarPengiriman(self, request, pabrik_name):
@@ -229,15 +267,10 @@ class BatchProduksiViewSet(viewsets.ViewSet):
         except BatchProduksi.DoesNotExist:
             return Response({"error": f"Batch Produksi dengan kode {batch_code} tidak ditemukan di pabrik {pabrik.nama}"}, status=status.HTTP_404_NOT_FOUND)
 
-        # if batch_produksi.status != '4' and request.data.get('status') == '4':
-        #     # Memanggil viewset BarangGudangViewSet
-        #     barang_gudang_viewset = BarangGudangViewSet()
-        #
-        #     # Mendapatkan stok barang dari batch produksi yang selesai
-        #     stok_barang = batch_produksi.jumlah  # Misalnya, mengambil jumlah batch produksi sebagai stok
-        #
-        #     # Memanggil metode AddStokGudang dari viewset BarangGudangViewSet
-        #     barang_gudang_viewset.AddStokGudang(request, pabrik_name, stok_barang)
+        if batch_produksi.status < 4 and request.data.get('status') == 4:
+            response = BarangPabrikViewSet().updateStokBarangInPabrik(batch_produksi, pabrik_name, batch_produksi.barang.id)
+            if response.status_code != 200:
+                return response
 
         updated_batch_produksi = BatchProduksiSerializer(instance=batch_produksi, data=request.data, partial=True, context={'pabrik': pabrik})
         updated_batch_produksi.is_valid(raise_exception=True)
