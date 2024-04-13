@@ -1,3 +1,4 @@
+from django.db.models import Max
 from rest_framework import serializers, status, viewsets
 from rest_framework.response import Response
 
@@ -5,8 +6,8 @@ from barang.models import Barang
 from pabrik.models import PermintaanPengiriman
 from pabrik.serializers import PermintaanPengirimanSerializer
 
-from .models import BarangGudang, Gudang
-from .serializers import BarangGudangSerializer, GudangSerializer
+from .models import *
+from .serializers import *
 
 
 class GudangViewSet(viewsets.ViewSet):
@@ -175,6 +176,33 @@ class PermintaanPengirimanViewSet(viewsets.ViewSet):
                 "tanggal_pengiriman": pengiriman.tanggal_pengiriman
             })
         return Response(data)
+    
+    def addPermintaanPengiriman(self, request, gudang_id):
+        try:
+            gudang = Gudang.objects.get(pk=gudang_id)
+        except Gudang.DoesNotExist:
+            return Response({"error": "Gudang tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+        
+        last_permintaan = PermintaanPengiriman.objects.aggregate(Max('kode_permintaan'))
+        last_code = last_permintaan['kode_permintaan__max']
+        if last_code:
+            next_code = int(last_code[3:]) + 1 
+        else:
+            next_code = 1
+        new_kode_permintaan = f"REQ{next_code:03}"
+        
+        request.data['kode_permintaan'] = new_kode_permintaan
+        request.data['gudang'] = gudang.id  
+
+        if 'barang_id' in request.data and 'gudang_id' in request.data:
+            request.data['barang'] = request.data.pop('barang_id')
+            request.data['gudang'] = request.data.pop('gudang_id')
+
+        serializer = PermintaanPengirimanSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def updateStatusGudang(self, request, kode_permintaan):
         try:
