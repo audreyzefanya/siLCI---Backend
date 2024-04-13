@@ -4,7 +4,6 @@
 *.pyc
 __pycache__
 db.sqlite3
-media
 
 # Backup files
 *.bak 
@@ -97,11 +96,13 @@ celerybeat-schedule.*
 *.sage.py 
 
 # Environments 
+env
 .env 
 .venv 
-env/ 
+.env/
+.env
 venv/ 
-ENV/ 
+.env/
 env.bak/ 
 venv.bak/ 
 
@@ -135,3 +136,5 @@ GitHub.sublime-settings
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+
+.idea
