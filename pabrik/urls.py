@@ -29,6 +29,9 @@ urlpatterns = [
         'get': 'getBarangInPabrik',
         'post': 'addBarangToPabrik'
     })),
+    path('barang/<str:pabrik_name>/<str:barang_id>', BarangPabrikViewSet.as_view({
+        'put': 'updateStokBarangInPabrik',
+    })),
     path('permintaanpengiriman/<str:pabrik_name>', PermintaanPengirimanViewSet.as_view({
         'get': 'getDaftarPengiriman',
         'post': 'addPermintaanPengiriman'
