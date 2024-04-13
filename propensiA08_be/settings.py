@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-0o+q%(_1=xj_+8&euq%mwa!prt0sf2x9a4__v)&h6_o_-x@2hn
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["propensi-a08-be-production.up.railway.app", "localhost"]
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -129,7 +129,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Jakarta'
 
 USE_I18N = True
 
