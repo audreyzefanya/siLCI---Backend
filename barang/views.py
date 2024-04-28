@@ -154,6 +154,7 @@ class PengadaanViewSet(viewsets.ViewSet):
             file_invoice = request.FILES['fileInvoice']
             upload_response = cloudinary.uploader.upload(file_invoice,
                                                         folder="pengadaanInvoice/",
+                                                        pages=True,
                                                         public_id=f"invoice_{pengadaan_id}")
             
             pengadaan.fileInvoice = upload_response['url']
@@ -172,6 +173,7 @@ class PengadaanViewSet(viewsets.ViewSet):
             file_payment = request.FILES['filePayment']
             upload_response = cloudinary.uploader.upload(file_payment,
                                                         folder="pengadaanPayment/",
+                                                        pages=True,
                                                         public_id=f"payment_{pengadaan_id}")
             
             pengadaan.filePayment = upload_response['url']
