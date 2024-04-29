@@ -204,7 +204,7 @@ class DashboardViewSet(viewsets.ViewSet):
         jumlah_pengadaan_payment = DashboardViewSet.namedtuplefetchall(cursor)
 
         # Ambil jumlah pengadaan by tanggal permintaan
-        cursor.execute('SELECT "tanggalPermintaaan", COUNT(*) AS jumlah FROM barang_pengadaanbarangimpor GROUP BY "tanggalPermintaaan"')
+        cursor.execute('SELECT DATE("tanggalPermintaaan"), COUNT(*) AS jumlah FROM barang_pengadaanbarangimpor WHERE "tanggalPermintaaan" >= NOW() - INTERVAL \'30 days\' GROUP BY DATE("tanggalPermintaaan")')
         jumlah_pengadaan_by_tanggalpermintaan = DashboardViewSet.namedtuplefetchall(cursor)
 
         response_data = {
@@ -245,8 +245,8 @@ class DashboardViewSet(viewsets.ViewSet):
         cursor.execute(f"SELECT COUNT(*) AS jumlah FROM barang_pengadaanbarangimpor WHERE STATUS = 1 AND perusahaan_id = {perusahaan.id}")
         jumlah_pengadaan_requested = DashboardViewSet.namedtuplefetchall(cursor)
 
-        # Ambil jumlah pengadaan by tanggal permintaan
-        cursor.execute(f'SELECT "tanggalPermintaaan", COUNT(*) AS jumlah FROM barang_pengadaanbarangimpor WHERE perusahaan_id = {perusahaan.id} GROUP BY "tanggalPermintaaan"')
+        # Ambil jumlah pengadaan by tanggal permintaan 30 hari terakhir
+        cursor.execute(f'SELECT DATE("tanggalPermintaaan"), COUNT(*) AS jumlah FROM barang_pengadaanbarangimpor WHERE "tanggalPermintaaan" >= NOW() - INTERVAL \'30 days\' AND perusahaan_id = {perusahaan.id} GROUP BY DATE("tanggalPermintaaan")')
         jumlah_pengadaan_by_tanggalpermintaan = DashboardViewSet.namedtuplefetchall(cursor)
 
         response_data = {
