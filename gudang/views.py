@@ -82,6 +82,7 @@ class BarangGudangViewSet(viewsets.ViewSet):
             "nama_gudang": gudang.nama,
             "alamat_gudang": gudang.alamat,
             "kapasitas_gudang": gudang.kapasitas,
+            "jenis_gudang": gudang.jenis.nama,
             "barang": data
         }
 
