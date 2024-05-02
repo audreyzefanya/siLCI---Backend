@@ -3,8 +3,6 @@ from django.db import connection
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 
-from gudang.views import BarangGudangViewSet
-
 from .models import *
 from .serializers import *
 
