@@ -17,11 +17,14 @@ class GudangViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     def createGudang(self, request):
+        nama_gudang = request.data.get('nama')
+        if Gudang.objects.filter(nama=nama_gudang).exists():
+            return Response({"error": "Nama gudang sudah ada."}, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = GudangSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
 
 class BarangGudangViewSet(viewsets.ViewSet):
     def addBarangToGudang(self, request, gudang_id):
