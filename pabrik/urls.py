@@ -16,6 +16,7 @@ urlpatterns = [
     })),
     path('<str:pabrik_name>', PabrikViewSet.as_view({
         'get': 'getPabrik',
+        'put': 'updatePabrik'
     })),
     path('batch/<str:pabrik_name>', BatchProduksiViewSet.as_view({
         'get': 'getAllBatchProduksiInPabrik',
@@ -28,6 +29,9 @@ urlpatterns = [
     path('barang/<str:pabrik_name>', BarangPabrikViewSet.as_view({
         'get': 'getBarangInPabrik',
         'post': 'addBarangToPabrik'
+    })),
+    path('barang/<str:pabrik_name>/<str:barang_id>', BarangPabrikViewSet.as_view({
+        'put': 'updateStokBarangInPabrik',
     })),
     path('permintaanpengiriman/<str:pabrik_name>', PermintaanPengirimanViewSet.as_view({
         'get': 'getDaftarPengiriman',

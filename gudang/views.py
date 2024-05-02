@@ -1,3 +1,4 @@
+from django.db import connection
 from django.db.models import Max
 from rest_framework import serializers, status, viewsets
 from rest_framework.response import Response

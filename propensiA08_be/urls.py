@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from authentication.views import login, register, detailUserById, getAdminImport
+from authentication.views import login, register, detailUserById, getAdminImport, getAllUsers, deleteUserById
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -38,6 +38,8 @@ urlpatterns = [
     path('api/barang/', include("barang.urls")),
     path('api/pabrik/', include("pabrik.urls")),
     path('api/gudang/', include("gudang.urls")),
+    path('api/users/', getAllUsers, name='get-all-users'),
+    path('api/user/delete/<int:user_id>/', deleteUserById, name='delete-user-by-id'),
 ]
 
 if settings.DEBUG:

@@ -1,4 +1,7 @@
+from collections import namedtuple
+from django.db import connection
 from django.db import IntegrityError
+from django.http import JsonResponse
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 
@@ -151,6 +154,7 @@ class PengadaanViewSet(viewsets.ViewSet):
             file_invoice = request.FILES['fileInvoice']
             upload_response = cloudinary.uploader.upload(file_invoice,
                                                         folder="pengadaanInvoice/",
+                                                        pages=True,
                                                         public_id=f"invoice_{pengadaan_id}")
             
             pengadaan.fileInvoice = upload_response['url']
@@ -169,6 +173,7 @@ class PengadaanViewSet(viewsets.ViewSet):
             file_payment = request.FILES['filePayment']
             upload_response = cloudinary.uploader.upload(file_payment,
                                                         folder="pengadaanPayment/",
+                                                        pages=True,
                                                         public_id=f"payment_{pengadaan_id}")
             
             pengadaan.filePayment = upload_response['url']
@@ -177,3 +182,76 @@ class PengadaanViewSet(viewsets.ViewSet):
         else:
             return Response({"error": "No payment file provided"}, status=status.HTTP_400_BAD_REQUEST)
 
+class DashboardViewSet(viewsets.ViewSet):
+    def namedtuplefetchall(cursor):
+        desc = cursor.description
+        result = [dict(zip([col[0] for col in desc], row)) for row in cursor.fetchall()]
+        return result
+
+    def getDataDashboardStafPengadaan(self, request):
+        cursor = connection.cursor()
+
+        # Ambil jumlah pengadaan seluruhnya
+        cursor.execute("SELECT COUNT(*) AS jumlah FROM barang_pengadaanbarangimpor")
+        jumlah_pengadaan = DashboardViewSet.namedtuplefetchall(cursor)
+
+        # Ambil jumlah pengadaan yang aktif saja
+        cursor.execute("SELECT COUNT(*) AS jumlah FROM barang_pengadaanbarangimpor WHERE STATUS > 0 AND STATUS <6")
+        jumlah_pengadaan_aktif = DashboardViewSet.namedtuplefetchall(cursor)
+
+        # Ambil jumlah pengadaan yang membutuhkan pembayaran
+        cursor.execute("SELECT COUNT(*) AS jumlah FROM barang_pengadaanbarangimpor WHERE STATUS = 2")
+        jumlah_pengadaan_payment = DashboardViewSet.namedtuplefetchall(cursor)
+
+        # Ambil jumlah pengadaan by tanggal permintaan
+        cursor.execute('SELECT DATE("tanggalPermintaaan"), COUNT(*) AS jumlah FROM barang_pengadaanbarangimpor WHERE "tanggalPermintaaan" >= NOW() - INTERVAL \'30 days\' GROUP BY DATE("tanggalPermintaaan")')
+        jumlah_pengadaan_by_tanggalpermintaan = DashboardViewSet.namedtuplefetchall(cursor)
+
+        response_data = {
+            'jumlah_pengadaan': jumlah_pengadaan[0]['jumlah'],
+            'jumlah_pengadaan_aktif': jumlah_pengadaan_aktif[0]['jumlah'],
+            'jumlah_pengadaan_payment': jumlah_pengadaan_payment[0]['jumlah'],
+            'jumlah_pengadaan_by_date': jumlah_pengadaan_by_tanggalpermintaan,
+        }
+        return Response(response_data)
+    
+    def getDataDashboardAdminImpor(self, request, admin_id):
+        cursor = connection.cursor()
+        
+        try:
+            perusahaan = PerusahaanImpor.objects.get(admin=admin_id)
+        except:
+            return Response({"error": "Perusahaan Impor tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Ambil jumlah barang
+        cursor.execute(f'SELECT COUNT(*) AS jumlah FROM "barang_perusahaanimpor_listBarang" WHERE perusahaanimpor_id = {perusahaan.id}')
+        jumlah_barang = DashboardViewSet.namedtuplefetchall(cursor)
+
+        # Ambil jumlah seluruh pengadaan 
+        cursor.execute(f"SELECT COUNT(*) AS jumlah FROM barang_pengadaanbarangimpor WHERE perusahaan_id = {perusahaan.id}")
+        jumlah_pengadaan = DashboardViewSet.namedtuplefetchall(cursor)
+
+        # Ambil jumlah pengadaan yang aktif saja
+        cursor.execute(f"SELECT COUNT(*) AS jumlah FROM barang_pengadaanbarangimpor WHERE STATUS > 0 AND STATUS <6 AND perusahaan_id = {perusahaan.id}")
+        jumlah_pengadaan_aktif = DashboardViewSet.namedtuplefetchall(cursor)
+
+        # Ambil jumlah pengadaan yang membutuhkan pembayaran
+        cursor.execute(f"SELECT COUNT(*) AS jumlah FROM barang_pengadaanbarangimpor WHERE STATUS = 1 AND perusahaan_id = {perusahaan.id}")
+        jumlah_pengadaan_requested = DashboardViewSet.namedtuplefetchall(cursor)
+
+        # Ambil jumlah pengadaan by tanggal permintaan 30 hari terakhir
+        cursor.execute(f'SELECT DATE("tanggalPermintaaan"), COUNT(*) AS jumlah FROM barang_pengadaanbarangimpor WHERE "tanggalPermintaaan" >= NOW() - INTERVAL \'30 days\' AND perusahaan_id = {perusahaan.id} GROUP BY DATE("tanggalPermintaaan")')
+        jumlah_pengadaan_by_tanggalpermintaan = DashboardViewSet.namedtuplefetchall(cursor)
+
+        response_data = {
+            'jumlah_barang': jumlah_barang[0]['jumlah'],
+            'jumlah_pengadaan': jumlah_pengadaan[0]['jumlah'],
+            'jumlah_pengadaan_aktif': jumlah_pengadaan_aktif[0]['jumlah'],
+            'jumlah_pengadaan_requested': jumlah_pengadaan_requested[0]['jumlah'],
+            'jumlah_pengadaan_by_date': jumlah_pengadaan_by_tanggalpermintaan,
+        }
+
+        return Response(response_data)
+
+        
+        
