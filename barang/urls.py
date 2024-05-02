@@ -58,7 +58,7 @@ urlpatterns = [
     path('dashboard/stafpengadaan', DashboardViewSet.as_view({
         'get': 'getDataDashboardStafPengadaan'
     })),
-    path('dashboard/adminimpor', DashboardViewSet.as_view({
+    path('dashboard/adminimpor/<str:admin_id>', DashboardViewSet.as_view({
         'get': 'getDataDashboardAdminImpor'
     })),
 ]
