@@ -54,4 +54,11 @@ urlpatterns = [
     path('pengadaan/request/upload-payment/<str:pengadaan_id>/', PengadaanViewSet.as_view({
         'post': 'uploadPaymentFile'
     }), name='upload-payment-file'),
+
+    path('dashboard/stafpengadaan', DashboardViewSet.as_view({
+        'get': 'getDataDashboardStafPengadaan'
+    })),
+    path('dashboard/adminimpor', DashboardViewSet.as_view({
+        'get': 'getDataDashboardAdminImpor'
+    })),
 ]
