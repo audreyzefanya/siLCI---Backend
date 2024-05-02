@@ -217,15 +217,10 @@ class DashboardViewSet(viewsets.ViewSet):
     
     def getDataDashboardAdminImpor(self, request):
         cursor = connection.cursor()
-        email = request.data.get('email')
-
-        try:
-            admin = CustomUser.objects.get(email=email)
-        except CustomUser.DoesNotExist:
-            return Response({"error": "Akun dengan email tersebut tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+        admin_id = request.data.get('id')
         
         try:
-            perusahaan = PerusahaanImpor.objects.get(admin=admin)
+            perusahaan = PerusahaanImpor.objects.get(admin=admin_id)
         except:
             return Response({"error": "Perusahaan Impor tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
         
