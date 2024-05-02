@@ -215,9 +215,8 @@ class DashboardViewSet(viewsets.ViewSet):
         }
         return Response(response_data)
     
-    def getDataDashboardAdminImpor(self, request):
+    def getDataDashboardAdminImpor(self, request, admin_id):
         cursor = connection.cursor()
-        admin_id = request.data.get('id')
         
         try:
             perusahaan = PerusahaanImpor.objects.get(admin=admin_id)
