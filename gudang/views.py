@@ -1,3 +1,4 @@
+from django.db import connection
 from django.db.models import Max
 from rest_framework import serializers, status, viewsets
 from rest_framework.response import Response
@@ -17,11 +18,14 @@ class GudangViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     def createGudang(self, request):
+        nama_gudang = request.data.get('nama')
+        if Gudang.objects.filter(nama=nama_gudang).exists():
+            return Response({"error": "Nama gudang sudah ada."}, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = GudangSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
 
 class BarangGudangViewSet(viewsets.ViewSet):
     def addBarangToGudang(self, request, gudang_id):
@@ -79,6 +83,7 @@ class BarangGudangViewSet(viewsets.ViewSet):
             "nama_gudang": gudang.nama,
             "alamat_gudang": gudang.alamat,
             "kapasitas_gudang": gudang.kapasitas,
+            "jenis_gudang": gudang.jenis.nama,
             "barang": data
         }
 

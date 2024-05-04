@@ -88,6 +88,17 @@ def getAdminImport(request):
     return Response(serializer.data)
     
 
+@api_view(['GET'])
+def getAllUsers(request):
+    users = CustomUser.objects.all()
+    serializer = CustomUserSerializer(users, many=True)
+    return Response(serializer.data)
+
+@api_view(['DELETE'])
+def deleteUserById(request, user_id):
+    user = get_object_or_404(CustomUser, pk=user_id)
+    user.delete()
+    return Response({"detail": "User deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
     
 
