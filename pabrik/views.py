@@ -18,7 +18,7 @@ class PabrikViewSet(viewsets.ViewSet):
             pabrik = Pabrik.objects.get(nama=pabrik_name)
         except Pabrik.DoesNotExist:
             return Response({"error": "Pabrik tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
-        
+
         pabrik_serializer = PabrikSerializer(pabrik)
         daftarBarang = BarangPabrik.objects.filter(pabrik=pabrik)
         barang_serializer = BarangPabrikSerializer(daftarBarang, many=True)
@@ -116,6 +116,11 @@ class BarangPabrikViewSet(viewsets.ViewSet):
 
 
 class PermintaanPengirimanViewSet(viewsets.ViewSet):
+    def getAllPermintaanPengiriman(self, request):
+        permintaan_pengiriman = PermintaanPengiriman.objects.all()
+        serializer = PermintaanPengirimanSerializer(permintaan_pengiriman, many=True)
+        return Response(serializer.data)
+
     def getDaftarPengiriman(self, request, pabrik_name):
         try:
             pabrik = Pabrik.objects.get(nama=pabrik_name)
@@ -185,6 +190,11 @@ class BatchProduksiViewSet(viewsets.ViewSet):
         if not daftarBatch:
             return Response({"error": "Tidak ada batch produksi pada pabrik ini"}, status=status.HTTP_404_NOT_FOUND)
 
+        serializers = BatchProduksiSerializer(daftarBatch, many=True)
+        return Response(serializers.data)
+
+    def getAllBatchProduksiStatus(self, request):
+        daftarBatch = BatchProduksi.objects.all()
         serializers = BatchProduksiSerializer(daftarBatch, many=True)
         return Response(serializers.data)
 

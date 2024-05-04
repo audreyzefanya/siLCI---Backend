@@ -11,6 +11,12 @@ urlpatterns = [
     path('allbarangpabrik', PabrikViewSet.as_view({
         'get': 'getAllBarangPabrik',
     })),
+    path('allbatchproduksi', BatchProduksiViewSet.as_view({
+        'get': 'getAllBatchProduksiStatus',
+    })),
+    path('allpermintaanpengiriman', PermintaanPengirimanViewSet.as_view({
+        'get': 'getAllPermintaanPengiriman',
+    })),
     path('create', PabrikViewSet.as_view({
         'post': 'createPabrik'
     })),
