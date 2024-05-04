@@ -1,13 +1,14 @@
 from collections import namedtuple
-from django.db import connection
-from django.db import IntegrityError
+
+import cloudinary.uploader
+from django.db import IntegrityError, connection
 from django.http import JsonResponse
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 
 from .models import *
 from .serializers import *
-import cloudinary.uploader
+
 
 class BarangViewSet(viewsets.ViewSet):
     def getAllBarang(self, request):
@@ -141,6 +142,16 @@ class PengadaanViewSet(viewsets.ViewSet):
     
     def getAllPengadaan(self, request):
         pengadaan = PengadaanBarangImpor.objects.all()
+        serializer = PengadaanSerializer(pengadaan, many=True)
+        return Response(serializer.data)
+    
+    def getAllPengadaanAdminImpor(self, request, admin_id):
+        try:
+            perusahaan = PerusahaanImpor.objects.get(admin=admin_id)
+        except PerusahaanImpor.DoesNotExist:
+            return Response({"error": "Perusahaan tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+        
+        pengadaan = PengadaanBarangImpor.objects.filter(perusahaan=perusahaan)
         serializer = PengadaanSerializer(pengadaan, many=True)
         return Response(serializer.data)
     
