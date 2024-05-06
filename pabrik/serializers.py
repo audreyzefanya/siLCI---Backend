@@ -10,10 +10,11 @@ class PabrikSerializer(serializers.ModelSerializer):
 
 class BarangPabrikSerializer(serializers.ModelSerializer):
     barang = BarangSerializer()
+    pabrik = PabrikSerializer()
 
     class Meta:
         model = BarangPabrik
-        fields = ['barang', 'stok']
+        fields = ['barang', 'pabrik', 'stok']
 
 class BatchProduksiSerializer(serializers.ModelSerializer):
     barang = BarangSerializer(read_only=True)
