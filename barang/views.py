@@ -17,6 +17,9 @@ class BarangViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     def createBarang(self, request):
+        foto = cloudinary.uploader.upload(request.data["foto"],
+                        folder = "barangfoto/",
+                        public_id=request.data["nama"])
         serializer = BarangSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()

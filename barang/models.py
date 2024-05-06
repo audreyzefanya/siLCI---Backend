@@ -1,7 +1,9 @@
+import uuid
+
 from django.db import models
 
-import uuid
 from authentication.models import CustomUser
+
 
 class Merk(models.Model):
     id = models.AutoField(primary_key=True)
@@ -13,6 +15,7 @@ class Barang(models.Model):
     nama = models.CharField(max_length = 50, null = False, unique=True)
     deskripsi = models.TextField()
     harga = models.BigIntegerField()
+    foto = models.TextField(null=True, blank=True)
 
 class PerusahaanImpor(models.Model):
     nama = models.CharField(max_length = 50, unique=True)
