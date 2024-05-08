@@ -34,26 +34,22 @@ class BarangViewSet(viewsets.ViewSet):
             return Response(serializer.data)
         except Barang.DoesNotExist:
             return Response({"error": "Barang tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
-        
+                
     def updateBarang(self, request, barang_id):
         try:
             barang = Barang.objects.get(pk=barang_id)
         except Barang.DoesNotExist:
-            return Response({"error": "Barang tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Barang not found'}, status=status.HTTP_404_NOT_FOUND)
 
         if 'foto' in request.FILES:
             foto = request.FILES['foto']
-            cloudinary.uploader.destroy(barang.foto, invalidate=True)
-            upload_response = cloudinary.uploader.upload(foto, folder="barangfoto/", public_id=request.data.get("nama", barang.nama))
-            barang.foto = upload_response['url']
-            barang.save()
+            upload_response = cloudinary.uploader.upload(foto, folder="barangfoto/", public_id=request.data.get("nama"))
+            request.data['foto'] = upload_response['url']
 
-        serializer = BarangSerializer(barang, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer = BarangSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class PerusahaanViewSet(viewsets.ViewSet):
     def getAllPerusahaan(self, request):
