@@ -17,9 +17,11 @@ class BarangViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     def createBarang(self, request):
-        foto = cloudinary.uploader.upload(request.data["foto"],
-                        folder = "barangfoto/",
-                        public_id=request.data["nama"])
+        if 'foto' in request.FILES:
+            foto = request.FILES['foto']
+            upload_response = cloudinary.uploader.upload(foto, folder="barangfoto/", public_id=request.data.get("nama"))
+            request.data['foto'] = upload_response['url']
+
         serializer = BarangSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -40,10 +42,10 @@ class BarangViewSet(viewsets.ViewSet):
             return Response({"error": "Barang tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
 
         if 'foto' in request.FILES:
-            image_data = cloudinary.uploader.upload(request.FILES['foto'],
-                                                    folder="barangfoto/",
-                                                    public_id=request.data.get("nama", barang.nama))
-            request.data['foto'] = image_data['url']
+            foto = request.FILES['foto']
+            cloudinary.uploader.destroy(barang.foto, invalidate=True)
+            upload_response = cloudinary.uploader.upload(foto, folder="barangfoto/", public_id=request.data.get("nama", barang.nama))
+            request.data['foto'] = upload_response['url']
 
         serializer = BarangSerializer(barang, data=request.data, partial=True)
         if serializer.is_valid():
