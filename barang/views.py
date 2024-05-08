@@ -45,7 +45,8 @@ class BarangViewSet(viewsets.ViewSet):
             foto = request.FILES['foto']
             cloudinary.uploader.destroy(barang.foto, invalidate=True)
             upload_response = cloudinary.uploader.upload(foto, folder="barangfoto/", public_id=request.data.get("nama", barang.nama))
-            request.data['foto'] = upload_response['url']
+            barang.foto = upload_response['url']
+            barang.save()
 
         serializer = BarangSerializer(barang, data=request.data, partial=True)
         if serializer.is_valid():
@@ -53,7 +54,6 @@ class BarangViewSet(viewsets.ViewSet):
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class PerusahaanViewSet(viewsets.ViewSet):
     def getAllPerusahaan(self, request):
