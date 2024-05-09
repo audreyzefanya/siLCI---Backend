@@ -159,6 +159,31 @@ class BarangGudangViewSet(viewsets.ViewSet):
 
         return Response({"message": f"Stok barang {baranggudang.barang.nama} telah ditambahkan pada {baranggudang.gudang.nama}"}, status=status.HTTP_200_OK)
 
+    def reduceStokGudang(self, request):
+        try:
+            barang_id = request.data.get('barang')
+            gudang_id = request.data.get('gudang')
+
+            # Retrieve the current stock
+            baranggudang = BarangGudang.objects.get(barang=barang_id, gudang=gudang_id)
+            currentStok = baranggudang.stok
+            reduceStok = int(request.data.get('stok', 0))  # Default to 0 if not provided
+
+            if reduceStok > currentStok:
+                return Response({"error": "Stok yang diminta lebih besar daripada stok yang tersedia"}, status=status.HTTP_400_BAD_REQUEST)
+
+            newStok = currentStok - reduceStok
+
+            # Update the stock using the database cursor
+            cursor = connection.cursor()
+            try:
+                cursor.execute("UPDATE gudang_baranggudang SET stok = %s WHERE barang_id = %s AND gudang_id = %s", [newStok, barang_id, gudang_id])
+            except Exception as e:
+                return Response({"error": f"Error mengurangi stok barang: {str(e)}"}, status=status.HTTP_404_NOT_FOUND)
+        except BarangGudang.DoesNotExist:
+            return Response({"error": "Barang atau gudang tidak ditemukan dalam gudang"}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({"message": f"Stok barang {baranggudang.barang.nama} telah dikurangi pada {baranggudang.gudang.nama}"}, status=status.HTTP_200_OK)
 
 class PermintaanPengirimanViewSet(viewsets.ViewSet):
     def getDaftarPengirimanGudang(self, request, gudang_id):
@@ -220,3 +245,5 @@ class PermintaanPengirimanViewSet(viewsets.ViewSet):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
