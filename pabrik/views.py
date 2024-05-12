@@ -114,6 +114,37 @@ class BarangPabrikViewSet(viewsets.ViewSet):
 
         return Response({"message": f"Stok barang {barangpabrik.barang.nama} telah diperbarui pada {barangpabrik.pabrik.nama}"}, status=status.HTTP_200_OK)
 
+    def reduceStokBarangInPabrik(self, permintaan, pabrik_name, barang_id):
+        try:
+            pabrik = Pabrik.objects.get(nama=pabrik_name)
+        except Pabrik.DoesNotExist:
+            return Response({"error": "Pabrik tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            barang = Barang.objects.get(pk=barang_id)
+        except Barang.DoesNotExist:
+            return Response({"error": f"Barang dengan ID {barang_id} tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            barangpabrik = BarangPabrik.objects.get(barang=barang, pabrik=pabrik)
+            currentStok = barangpabrik.stok
+            reduceStok = permintaan.jumlah
+
+            if reduceStok > currentStok:
+                return Response({"error": "Stok yang diminta lebih besar daripada stok yang tersedia"}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                newStok = currentStok - reduceStok
+
+            cursor = connection.cursor()
+            try:
+                cursor.execute("UPDATE pabrik_barangpabrik SET stok = %s WHERE barang_id = %s AND pabrik_id = %s", [newStok, barang_id, pabrik.id])
+            except:
+                return Response({"error": f"Error mengupdate stok barang {barangpabrik.stok}"}, status=status.HTTP_404_NOT_FOUND)
+        except BarangPabrik.DoesNotExist:
+            return Response({"error": f"Barang {barang.nama} tidak ditemukan pada pabrik {pabrik.nama}"}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({"message": f"Stok barang {barangpabrik.barang.nama} telah diperbarui pada {barangpabrik.pabrik.nama}"}, status=status.HTTP_200_OK)
+
 
 class PermintaanPengirimanViewSet(viewsets.ViewSet):
     def getAllPermintaanPengiriman(self, request):
@@ -170,6 +201,9 @@ class PermintaanPengirimanViewSet(viewsets.ViewSet):
             permintaan = PermintaanPengiriman.objects.get(kode_permintaan=kode_permintaan)
         except PermintaanPengiriman.DoesNotExist:
             return Response({"error": "Kode pengiriman tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+        if permintaan.status != 4 and request.data.get('status') == 4:
+            BarangPabrikViewSet().reduceStokBarangInPabrik(permintaan, permintaan.pabrik.nama, permintaan.barang.id)
 
         serializer = PermintaanPengirimanSerializer(permintaan, data=request.data, partial=True)
         if serializer.is_valid():
