@@ -240,6 +240,15 @@ class PermintaanPengirimanViewSet(viewsets.ViewSet):
         except PermintaanPengiriman.DoesNotExist:
             return Response({"error": "Kode pengiriman tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
 
+        # Mengubah request data untuk memanggil metode addStokGudang dengan mengganti "stok" menjadi "jumlah"
+        request.data['stok'] = request.data['jumlah']
+
+        if permintaan.status != 4 and request.data.get('status') == 4:
+            try:
+                BarangGudangViewSet().addStokGudang(request)
+            except Exception as e:
+                return Response({"error": f"Error menambahkan stok barang: {str(e)}"}, status=status.HTTP_404_NOT_FOUND)
+
         serializer = PermintaanPengirimanSerializer(permintaan, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
