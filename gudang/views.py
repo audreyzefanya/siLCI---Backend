@@ -1,3 +1,4 @@
+from django.db import connection
 from django.db.models import Max
 from rest_framework import serializers, status, viewsets
 from rest_framework.response import Response
@@ -17,11 +18,14 @@ class GudangViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     def createGudang(self, request):
+        nama_gudang = request.data.get('nama')
+        if Gudang.objects.filter(nama=nama_gudang).exists():
+            return Response({"error": "Nama gudang sudah ada."}, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = GudangSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
 
 class BarangGudangViewSet(viewsets.ViewSet):
     def addBarangToGudang(self, request, gudang_id):
@@ -79,6 +83,7 @@ class BarangGudangViewSet(viewsets.ViewSet):
             "nama_gudang": gudang.nama,
             "alamat_gudang": gudang.alamat,
             "kapasitas_gudang": gudang.kapasitas,
+            "jenis_gudang": gudang.jenis.nama,
             "barang": data
         }
 
@@ -154,6 +159,31 @@ class BarangGudangViewSet(viewsets.ViewSet):
 
         return Response({"message": f"Stok barang {baranggudang.barang.nama} telah ditambahkan pada {baranggudang.gudang.nama}"}, status=status.HTTP_200_OK)
 
+    def reduceStokGudang(self, request):
+        try:
+            barang_id = request.data.get('barang')
+            gudang_id = request.data.get('gudang')
+
+            # Retrieve the current stock
+            baranggudang = BarangGudang.objects.get(barang=barang_id, gudang=gudang_id)
+            currentStok = baranggudang.stok
+            reduceStok = int(request.data.get('stok', 0))  # Default to 0 if not provided
+
+            if reduceStok > currentStok:
+                return Response({"error": "Stok yang diminta lebih besar daripada stok yang tersedia"}, status=status.HTTP_400_BAD_REQUEST)
+
+            newStok = currentStok - reduceStok
+
+            # Update the stock using the database cursor
+            cursor = connection.cursor()
+            try:
+                cursor.execute("UPDATE gudang_baranggudang SET stok = %s WHERE barang_id = %s AND gudang_id = %s", [newStok, barang_id, gudang_id])
+            except Exception as e:
+                return Response({"error": f"Error mengurangi stok barang: {str(e)}"}, status=status.HTTP_404_NOT_FOUND)
+        except BarangGudang.DoesNotExist:
+            return Response({"error": "Barang atau gudang tidak ditemukan dalam gudang"}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({"message": f"Stok barang {baranggudang.barang.nama} telah dikurangi pada {baranggudang.gudang.nama}"}, status=status.HTTP_200_OK)
 
 class PermintaanPengirimanViewSet(viewsets.ViewSet):
     def getDaftarPengirimanGudang(self, request, gudang_id):
@@ -210,8 +240,19 @@ class PermintaanPengirimanViewSet(viewsets.ViewSet):
         except PermintaanPengiriman.DoesNotExist:
             return Response({"error": "Kode pengiriman tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
 
+        # Mengubah request data untuk memanggil metode addStokGudang dengan mengganti "stok" menjadi "jumlah"
+        request.data['stok'] = request.data['jumlah']
+
+        if permintaan.status != 4 and request.data.get('status') == 4:
+            try:
+                BarangGudangViewSet().addStokGudang(request)
+            except Exception as e:
+                return Response({"error": f"Error menambahkan stok barang: {str(e)}"}, status=status.HTTP_404_NOT_FOUND)
+
         serializer = PermintaanPengirimanSerializer(permintaan, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    

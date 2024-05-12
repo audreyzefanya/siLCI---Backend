@@ -47,6 +47,10 @@ urlpatterns = [
         'get': 'getAllPengadaan'
     }), name='all-pengadaan'),
 
+    path('perusahaan/request/all/<str:admin_id>', PengadaanViewSet.as_view({
+    'get': 'getAllPengadaanAdminImpor'
+    }), name='all-pengadaan-admin-impor'),
+
     path('pengadaan/request/upload-invoice/<str:pengadaan_id>', PengadaanViewSet.as_view({
         'post': 'uploadInvoiceFile'
     }), name='upload-invoice-file'),
@@ -54,4 +58,11 @@ urlpatterns = [
     path('pengadaan/request/upload-payment/<str:pengadaan_id>/', PengadaanViewSet.as_view({
         'post': 'uploadPaymentFile'
     }), name='upload-payment-file'),
+
+    path('dashboard/stafpengadaan', DashboardViewSet.as_view({
+        'get': 'getDataDashboardStafPengadaan'
+    })),
+    path('dashboard/adminimpor/<str:admin_id>', DashboardViewSet.as_view({
+        'get': 'getDataDashboardAdminImpor'
+    })),
 ]
