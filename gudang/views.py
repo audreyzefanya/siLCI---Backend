@@ -74,6 +74,7 @@ class BarangGudangViewSet(viewsets.ViewSet):
         for bg in barang_gudang:
             nama_barang = bg.barang.nama
             data.append({
+                "id_barang": bg.barang.id,
                 "nama_barang": nama_barang,
                 "stok": bg.stok
             })
