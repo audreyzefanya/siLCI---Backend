@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from barang.models import Barang
 from pabrik.models import PermintaanPengiriman
 from pabrik.serializers import PermintaanPengirimanSerializer
+from pabrik.views import BarangPabrikViewSet
 
 from .models import *
 from .serializers import *
@@ -99,37 +100,7 @@ class BarangGudangViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
-    
-    def addStokGudang(self, request):
-        try:
-            barang_id = request.data.get('barang')
-            gudang_id = request.data.get('gudang')
 
-            baranggudang = BarangGudang.objects.get(barang=barang_id, gudang=gudang_id)
-            newStok = baranggudang.stok + request.data.get('stok')
-
-            cursor = connection.cursor()
-    
-            try:
-                cursor.execute("UPDATE gudang_baranggudang SET stok = %s WHERE barang_id = %s AND gudang_id = %s", [newStok, barang_id, gudang_id])
-            except:
-                return Response({"error": f"Error menambahkan stok barang {baranggudang.stok}"}, status=status.HTTP_404_NOT_FOUND)
-        except BarangGudang.DoesNotExist:
-            try:
-                barang = Barang.objects.get(pk=request.data.get('barang'))
-            except Barang.DoesNotExist:
-                return Response({"error": f"Barang dengan ID tersebut tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
-            
-            try:
-                gudang = Gudang.objects.get(pk=request.data.get('gudang'))
-            except Gudang.DoesNotExist:
-                return Response({"error": "Gudang tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
-            
-            baranggudang = BarangGudang.objects.create(barang=barang, gudang=gudang, stok=request.data.get('stok'))
-            pass
-
-        return Response({"message": f"Stok barang {baranggudang.barang.nama} telah ditambahkan pada {baranggudang.gudang.nama}"}, status=status.HTTP_200_OK)
-    
     def addStokGudang(self, request):
         try:
             barang_id = request.data.get('barang')
@@ -241,12 +212,15 @@ class PermintaanPengirimanViewSet(viewsets.ViewSet):
         except PermintaanPengiriman.DoesNotExist:
             return Response({"error": "Kode pengiriman tidak ditemukan"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Mengubah request data untuk memanggil metode addStokGudang dengan mengganti "stok" menjadi "jumlah"
-        request.data['stok'] = request.data['jumlah']
+        # Mengubah request data untuk memanggil metode addStokGudang
+        request.data['stok'] = permintaan.jumlah
+        request.data['barang'] = permintaan.barang.id
+        request.data['gudang'] = permintaan.gudang.id
 
         if permintaan.status != 4 and request.data.get('status') == 4:
             try:
                 BarangGudangViewSet().addStokGudang(request)
+                BarangPabrikViewSet().reduceStokBarangInPabrik(permintaan, permintaan.pabrik.nama, permintaan.barang.id)
             except Exception as e:
                 return Response({"error": f"Error menambahkan stok barang: {str(e)}"}, status=status.HTTP_404_NOT_FOUND)
 
