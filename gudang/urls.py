@@ -39,5 +39,7 @@ urlpatterns = [
     path('statuspengiriman/<str:kode_permintaan>', PermintaanPengirimanViewSet.as_view({
         'put': 'statusPengirimanGudang',
     })),
-
+    path('delete/<uuid:gudang_id>/', GudangViewSet.as_view({
+        'delete': 'deleteGudang'
+    })),
 ]

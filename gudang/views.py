@@ -27,6 +27,15 @@ class GudangViewSet(viewsets.ViewSet):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    def deleteGudang(self, request, gudang_id):
+        try:
+            gudang = Gudang.objects.get(pk=gudang_id)
+        except Gudang.DoesNotExist:
+            return Response({"error": "Gudang tidak dapat ditemukan"}, status=status.HTTP_404_NOT_FOUND)
+
+        gudang.delete()
+        return Response({"message": "Gudang berhasil dihapus"}, status=status.HTTP_204_NO_CONTENT)
+
 class BarangGudangViewSet(viewsets.ViewSet):
     def addBarangToGudang(self, request, gudang_id):
         try:
